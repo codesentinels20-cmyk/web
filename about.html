@@ -434,80 +434,17 @@
         /* ============================================
            RESPONSIVE DESIGN
            ============================================ */
-        /* Mobile Menu Styles */
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            gap: 6px;
-        }
-
-        .hamburger span {
-            width: 25px;
-            height: 3px;
-            background-color: #00ff41;
-            transition: all 0.3s ease;
-        }
-
-        .hamburger.active span:nth-child(1) {
-            transform: rotate(45deg) translate(8px, 8px);
-        }
-
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .hamburger.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -7px);
-        }
-
         @media (max-width: 768px) {
-            .hamburger {
-                display: flex;
-            }
-
-            .nav-container {
-                padding: 15px 20px;
-                flex-wrap: wrap;
-            }
-
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: 70px;
-                left: 0;
-                width: 100%;
-                flex-direction: column;
-                gap: 0;
-                background: rgba(0, 0, 0, 0.95);
-                border-bottom: 2px solid #00ff41;
-                padding: 20px 0;
-            }
-
-            .nav-links.active {
-                display: flex;
-            }
-
-            .nav-links li {
-                width: 100%;
-            }
-
-            .nav-links a {
-                display: block;
-                padding: 15px 20px;
-                border-bottom: 1px solid rgba(0, 255, 65, 0.2);
-            }
-
-            .nav-links a::after {
-                display: none;
-            }
-
             .hero-title {
                 font-size: 2rem;
             }
 
             .ascii-banner {
                 font-size: 0.4rem;
+            }
+
+            .nav-links {
+                gap: 15px;
             }
 
             .cards-container {
@@ -521,32 +458,13 @@
 
         @media (max-width: 480px) {
             .nav-container {
-                padding: 12px 10px;
-                gap: 10px;
-            }
-
-            .nav-logo {
-                font-size: 0.9rem;
-                width: 100%;
-            }
-
-            .nav-links {
-                top: 60px;
-            }
-
-            .nav-links a {
-                padding: 12px 15px;
-                font-size: 0.85rem;
+                flex-direction: column;
+                gap: 15px;
+                padding: 10px;
             }
 
             .hero-title {
                 font-size: 1.5rem;
-                margin-bottom: 15px;
-            }
-
-            .hero-subtitle {
-                font-size: 1rem;
-                margin-bottom: 20px;
             }
 
             .ascii-banner {
@@ -559,52 +477,6 @@
 
             .stat-number {
                 font-size: 1.8rem;
-            }
-
-            .main-content {
-                padding: 70px 10px 25px;
-            }
-
-            .cards-container {
-                gap: 20px;
-            }
-
-            .info-card {
-                padding: 20px;
-            }
-
-            .card-title {
-                font-size: 1.3rem;
-            }
-
-            .card-content {
-                font-size: 0.85rem;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .nav-container {
-                padding: 10px 8px;
-            }
-
-            .nav-logo {
-                font-size: 0.85rem;
-            }
-
-            .hero-title {
-                font-size: 1.3rem;
-            }
-
-            .main-content {
-                padding: 60px 8px 20px;
-            }
-
-            .info-card {
-                padding: 15px;
-            }
-
-            .card-title {
-                font-size: 1.1rem;
             }
         }
 
@@ -662,16 +534,11 @@
         <a href="home.html" class="nav-logo">
             <span>⟨/⟩</span> CYBER_SENTINELS
         </a>
-        <ul class="nav-links" id="navLinks">
+        <ul class="nav-links">
             <li><a href="home.html">Home</a></li>
             <li><a href="about.html" class="active">About</a></li>
             <li><a href="team.html">Team</a></li>
         </ul>
-        <div class="hamburger" id="hamburger">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
     </nav>
 
     <!-- Main Content -->
@@ -817,33 +684,6 @@
     </footer>
 
     <script>
-        // ========== Hamburger Menu Toggle ==========
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.getElementById('navLinks');
-        
-        if (hamburger) {
-            hamburger.addEventListener('click', () => {
-                hamburger.classList.toggle('active');
-                navLinks.classList.toggle('active');
-            });
-        }
-
-        // Close menu when a link is clicked
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                navLinks.classList.remove('active');
-            });
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('nav')) {
-                hamburger.classList.remove('active');
-                navLinks.classList.remove('active');
-            }
-        });
-
         /* ============================================
            MATRIX RAIN ANIMATION
            ============================================ */

@@ -35,6 +35,7 @@
             left: 0;
             right: 0;
             z-index: 100;
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             background-color: rgba(0, 0, 0, 0.7);
             border-bottom: 1px solid rgba(0, 255, 65, 0.3);
@@ -233,72 +234,13 @@
             margin-bottom: 8px;
         }
 
-        /* Mobile Menu Styles */
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            gap: 6px;
-        }
-
-        .hamburger span {
-            width: 25px;
-            height: 3px;
-            background-color: #00ff41;
-            transition: all 0.3s ease;
-        }
-
-        .hamburger.active span:nth-child(1) {
-            transform: rotate(45deg) translate(8px, 8px);
-        }
-
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .hamburger.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -7px);
-        }
-
         @media (max-width: 768px) {
-            .hamburger {
-                display: flex;
+            .nav-menu {
+                display: none;
             }
 
             .nav-container {
                 padding: 15px 20px;
-                flex-wrap: wrap;
-            }
-
-            .nav-menu {
-                display: none;
-                position: absolute;
-                top: 70px;
-                left: 0;
-                width: 100%;
-                flex-direction: column;
-                gap: 0;
-                background: rgba(0, 0, 0, 0.95);
-                border-bottom: 2px solid #00ff41;
-                padding: 20px 0;
-            }
-
-            .nav-menu.active {
-                display: flex;
-            }
-
-            .nav-menu li {
-                width: 100%;
-            }
-
-            .nav-menu a {
-                display: block;
-                padding: 15px 20px;
-                border-bottom: 1px solid rgba(0, 255, 65, 0.2);
-            }
-
-            .nav-menu a::after {
-                display: none;
             }
 
             .team-section {
@@ -316,88 +258,6 @@
 
             .flip-card {
                 height: 300px;
-            }
-
-            .executive-login, #logoutBtn {
-                margin-top: 10px;
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .nav-container {
-                padding: 12px 10px;
-            }
-
-            .team-section {
-                padding: 80px 15px 60px;
-            }
-
-            .section-title {
-                font-size: 24px;
-                margin-bottom: 30px;
-            }
-
-            .team-grid {
-                gap: 20px;
-            }
-
-            .flip-card {
-                height: 250px;
-            }
-
-            .flip-card-front, .flip-card-back {
-                padding: 20px;
-            }
-
-            .member-name {
-                font-size: 18px;
-                margin-bottom: 10px;
-            }
-
-            .member-position {
-                font-size: 14px;
-                margin-bottom: 8px;
-            }
-
-            .position-description {
-                font-size: 12px;
-            }
-
-            .contact-info {
-                font-size: 12px;
-            }
-
-            .contact-label {
-                font-size: 11px;
-            }
-
-            .contact-detail {
-                font-size: 11px;
-                margin-bottom: 5px;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .team-section {
-                padding: 70px 10px 50px;
-            }
-
-            .section-title {
-                font-size: 18px;
-                margin-bottom: 20px;
-            }
-
-            .flip-card {
-                height: 220px;
-            }
-
-            .member-name {
-                font-size: 16px;
-            }
-
-            .member-position {
-                font-size: 12px;
             }
         }
 
@@ -451,8 +311,7 @@
 
     <nav>
         <div class="nav-container">
-            <a href="home.html" class="logo" style="font-size: 20px; color: #00ff41; text-decoration: none; font-weight: bold;">CYBER SENTINELS</a>
-            <ul class="nav-menu" id="navMenu">
+            <ul class="nav-menu">
                 <li><a href="home.html">HOME</a></li>
                 <li><a href="home.html#about">ABOUT</a></li>
                 <li><a href="#">EVENTS</a></li>
@@ -460,16 +319,9 @@
                 <li><a href="#">RESOURCES</a></li>
                 <li><a href="#">CONTACT</a></li>
                 <li><a href="dashboard.html" id="dashboardLink" style="display: none;">DASHBOARD</a></li>
-                <li style="border: none; padding: 15px 20px;">
-                    <button class="executive-login" id="loginBtn">EXECUTIVE LOGIN</button>
-                    <button id="logoutBtn" style="display: none; background: #ff6600;">LOGOUT</button>
-                </li>
             </ul>
-            <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+            <button class="executive-login" id="loginBtn">EXECUTIVE LOGIN</button>
+            <button id="logoutBtn" style="display: none; background: #ff6600; margin-left: 15px;">LOGOUT</button>
         </div>
     </nav>
 
@@ -676,7 +528,6 @@
         </div>
     </section>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         class MatrixRain {
             constructor(canvasId) {
@@ -727,80 +578,6 @@
 
         new MatrixRain('matrix-canvas');
 
-        // ========== Hamburger Menu Toggle ==========
-        const hamburger = document.getElementById('hamburger');
-        const navMenu = document.getElementById('navMenu');
-        
-        if (hamburger) {
-            hamburger.addEventListener('click', () => {
-                hamburger.classList.toggle('active');
-                navMenu.classList.toggle('active');
-            });
-        }
-
-        // Close menu when a link is clicked
-        document.querySelectorAll('.nav-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                navMenu.classList.remove('active');
-            });
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('nav')) {
-                hamburger.classList.remove('active');
-                navMenu.classList.remove('active');
-            }
-        });
-
-        // ========== Auth State Management ==========
-        document.addEventListener('DOMContentLoaded', async function() {
-            const { createClient } = window.supabase;
-            const supabaseClient = createClient(
-                'https://fleqkgloxgfgpcugmvza.supabase.co',
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsZXFrZ2xveGdmZ3BjdWdtdnphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NzAyMTMsImV4cCI6MjA4ODQ0NjIxM30.jBYtHQT1tsGFkYOH29PRl0nZj65G4_m4CARdZ1ajLsQ'
-            );
-            
-            const dashboardLink = document.getElementById('dashboardLink');
-            const loginBtn = document.getElementById('loginBtn');
-            const logoutBtn = document.getElementById('logoutBtn');
-            
-            try {
-                const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-                
-                // Handle refresh token errors
-                if (authError && (authError.code === 'refresh_token_not_found' || authError.code === 'invalid_refresh_token')) {
-                    console.warn('Invalid session, clearing...');
-                    await supabaseClient.auth.signOut().catch(() => {});
-                    dashboardLink.style.display = 'none';
-                    loginBtn.style.display = 'block';
-                    logoutBtn.style.display = 'none';
-                    return;
-                }
-                
-                if (user && user.email_confirmed_at) {
-                    dashboardLink.style.display = 'block';
-                    loginBtn.style.display = 'none';
-                    logoutBtn.style.display = 'block';
-                    
-                    logoutBtn.addEventListener('click', async () => {
-                        await supabaseClient.auth.signOut();
-                        window.location.href = 'home.html';
-                    });
-                } else {
-                    dashboardLink.style.display = 'none';
-                    loginBtn.style.display = 'block';
-                    logoutBtn.style.display = 'none';
-                }
-            } catch (error) {
-                console.error('Auth error:', error);
-                dashboardLink.style.display = 'none';
-                loginBtn.style.display = 'block';
-                logoutBtn.style.display = 'none';
-            }
-        });
-
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -811,7 +588,7 @@
             });
         });
 
-        document.getElementById('loginBtn').addEventListener('click', () => {
+        document.querySelector('.executive-login').addEventListener('click', () => {
             window.location.href = 'auth.html';
         });
 

@@ -344,11 +344,22 @@
         /* ============================================
            RESPONSIVE DESIGN
            ============================================ */
+        @media (max-width: 1024px) {
+            .terminal-container {
+                width: 95%;
+                max-width: 800px;
+                max-height: 75vh;
+                padding: 25px;
+            }
+        }
+
         @media (max-width: 768px) {
             .terminal-container {
-                max-height: 80vh;
+                width: 95%;
+                max-height: 70vh;
                 padding: 20px;
                 border-width: 1px;
+                border-radius: 5px;
             }
 
             #command-input {
@@ -357,30 +368,86 @@
 
             .boot-line,
             .message {
+                font-size: 13px;
+                min-height: 20px;
+                margin: 5px 0;
+            }
+
+            .input-line {
+                gap: 6px;
                 font-size: 14px;
+            }
+
+            .prompt {
+                font-size: 14px;
+            }
+
+            .cursor {
+                width: 8px;
+                height: 16px;
             }
         }
 
         @media (max-width: 480px) {
             body {
-                font-size: 12px;
+                font-size: 11px;
             }
 
             .terminal-container {
-                width: 95%;
-                max-height: 75vh;
+                width: 98%;
+                max-height: 65vh;
                 padding: 15px;
+                box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+                margin: 10px auto;
             }
 
             #command-input,
             .boot-line,
             .message {
                 font-size: 12px;
+                line-height: 1.4;
             }
 
             .cursor {
-                width: 8px;
-                height: 16px;
+                width: 6px;
+                height: 14px;
+            }
+
+            .input-line {
+                gap: 4px;
+                font-size: 12px;
+            }
+
+            .prompt {
+                font-size: 12px;
+                margin-right: 2px;
+            }
+
+            .boot-line {
+                margin: 4px 0;
+            }
+
+            .message {
+                margin: 3px 0;
+                min-height: 18px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .terminal-container {
+                width: 100%;
+                max-height: 60vh;
+                padding: 12px;
+                border-radius: 3px;
+            }
+
+            body, #command-input, .boot-line, .message {
+                font-size: 11px;
+            }
+
+            .cursor {
+                width: 5px;
+                height: 12px;
             }
         }
 

@@ -377,6 +377,172 @@
         .cursor-inner.hover {
             background-color: rgba(0, 217, 255, 0.6);
         }
+
+        /* Mobile Menu Styles */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 6px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background-color: #00ff41;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Mobile Responsive Media Query */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-container {
+                padding: 15px 20px;
+                flex-wrap: wrap;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                flex-direction: column;
+                gap: 0;
+                background: rgba(0, 0, 0, 0.95);
+                border-bottom: 2px solid #00ff41;
+                padding: 20px 0;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .nav-menu li {
+                width: 100%;
+            }
+
+            .nav-menu a {
+                display: block;
+                padding: 15px 20px;
+                border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+            }
+
+            .nav-menu a::after {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 60px;
+            }
+
+            .subtitle {
+                font-size: 18px;
+            }
+
+            .tagline {
+                font-size: 14px;
+            }
+
+            .hero {
+                padding-top: 100px;
+            }
+
+            .hero-title {
+                margin-top: 0;
+                padding: 0 15px;
+            }
+
+            .cta-buttons {
+                gap: 10px;
+            }
+
+            .btn {
+                padding: 12px 25px;
+                font-size: 14px;
+                width: 100%;
+            }
+
+            .features {
+                padding: 50px 20px;
+            }
+
+            .features-container {
+                gap: 20px;
+            }
+
+            .feature-card {
+                padding: 25px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .executive-login, #logoutBtn {
+                padding: 8px 15px;
+                font-size: 12px;
+                width: 100%;
+                margin-top: 10px;
+                margin-left: 0 !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                padding-top: 80px;
+                min-height: auto;
+            }
+
+            .hero-title {
+                font-size: 45px;
+                margin: 15px 0;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+
+            .tagline {
+                font-size: 12px;
+            }
+
+            .logo {
+                font-size: 16px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 12px;
+            }
+
+            .features {
+                padding: 40px 15px;
+            }
+
+            .feature-card h3 {
+                font-size: 18px;
+            }
+
+            .feature-card p {
+                font-size: 13px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -390,7 +556,8 @@
     <!-- Navigation Bar -->
     <nav>
         <div class="nav-container">
-            <ul class="nav-menu">
+            <a href="home.html" class="logo">CYBER SENTINELS</a>
+            <ul class="nav-menu" id="navMenu">
                 <li><a href="home.html">HOME</a></li>
                 <li><a href="about.html">ABOUT</a></li>
                 <li><a href="#">EVENTS</a></li>
@@ -398,9 +565,16 @@
                 <li><a href="#">RESOURCES</a></li>
                 <li><a href="#">CONTACT</a></li>
                 <li><a href="dashboard.html" id="dashboardLink" style="display: none;">DASHBOARD</a></li>
+                <li style="border: none; padding: 15px 20px;">
+                    <button class="executive-login" id="loginBtn">EXECUTIVE LOGIN</button>
+                    <button id="logoutBtn" style="display: none; background: #ff6600; margin-left: 0;">LOGOUT</button>
+                </li>
             </ul>
-            <button class="executive-login" id="loginBtn">EXECUTIVE LOGIN</button>
-            <button id="logoutBtn" style="display: none; background: #ff6600; margin-left: 15px;">LOGOUT</button>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </nav>
 
@@ -444,6 +618,33 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // ========== Hamburger Menu Toggle ==========
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+        
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                navMenu.classList.toggle('active');
+            });
+        }
+
+        // Close menu when a link is clicked
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('nav')) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+
         // ========== Supabase Auth Setup ==========
         const SUPABASE_URL = 'https://fleqkgloxgfgpcugmvza.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsZXFrZ2xveGdmZ3BjdWdtdnphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NzAyMTMsImV4cCI6MjA4ODQ0NjIxM30.jBYtHQT1tsGFkYOH29PRl0nZj65G4_m4CARdZ1ajLsQ';

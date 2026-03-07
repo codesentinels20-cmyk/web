@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Executive Dashboard</title>
+    <title>Dashboard - Cyber Sentinels (KEC)</title>
     <style>
+        /* ============================================
+           RESET & BASE STYLES
+           ============================================ */
         * {
             margin: 0;
             padding: 0;
@@ -12,251 +15,764 @@
         }
 
         body {
-            font-family: 'Courier New', monospace;
-            background: #000000;
-            color: #00ff41;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
-            position: relative;
             overflow-x: hidden;
         }
 
+        /* ============================================
+           NAVBAR
+           ============================================ */
         .navbar {
-            position: relative;
-            z-index: 2;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0, 0, 0, 0.8);
             border-bottom: 2px solid #00ff41;
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
-        }
-
-        .navbar h1 {
-            font-size: 20px;
-            text-shadow: 0 0 10px #00ff41;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .nav-links a, .nav-links button {
-            color: #00ff41;
-            text-decoration: none;
-            font-size: 12px;
-            cursor: pointer;
-            background: transparent;
-            border: 1px solid #00ff41;
-            padding: 8px 15px;
-            transition: all 0.3s;
-            font-family: 'Courier New', monospace;
-        }
-
-        .nav-links a:hover, .nav-links button:hover {
-            background: #00ff41;
-            color: #0a0e27;
-            font-weight: bold;
-        }
-
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 800px;
-            margin: 30px auto;
-            padding: 40px;
-            background: rgba(0, 0, 0, 0.95);
-            border: 2px solid #00ff41;
+            position: sticky;
+            top: 0;
+            z-index: 100;
             box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
         }
 
-        .dashboard-title {
-            text-align: center;
+        .navbar-brand {
             font-size: 24px;
-            margin-bottom: 30px;
-            text-shadow: 0 0 10px #00ff41;
-        }
-
-        .member-info {
-            background: rgba(0, 255, 65, 0.05);
-            border: 1px solid #00ff41;
-            padding: 20px;
-            margin-bottom: 30px;
-            border-radius: 3px;
-        }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(0, 255, 65, 0.2);
-        }
-
-        .info-row:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
             font-weight: bold;
-            color: #0096ff;
+            color: #00ff41;
+            letter-spacing: 1px;
         }
 
-        .info-value {
+        .navbar-menu {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .navbar-menu a {
+            color: #e0e0e0;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .navbar-menu a:hover {
             color: #00ff41;
         }
 
-        .loading {
+        .logout-btn {
+            background-color: #ff4141;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background-color: #cc3333;
+        }
+
+        /* ============================================
+           CONTAINER
+           ============================================ */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* ============================================
+           DASHBOARD HEADER
+           ============================================ */
+        .dashboard-header {
             text-align: center;
-            padding: 40px;
+            margin-bottom: 40px;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dashboard-header h1 {
+            font-size: 42px;
+            color: #00ff41;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+        }
+
+        .dashboard-header p {
+            font-size: 16px;
+            color: #00d9ff;
+        }
+
+        /* ============================================
+           MAIN CONTENT
+           ============================================ */
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* ============================================
+           SECTION STYLING
+           ============================================ */
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 8px;
+            padding: 25px;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 255, 65, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            border-color: #00ff41;
+            box-shadow: 0 8px 32px rgba(0, 255, 65, 0.2);
+        }
+
+        .section-title {
+            font-size: 22px;
+            color: #00ff41;
+            margin-bottom: 20px;
+            font-weight: bold;
+            border-bottom: 2px solid rgba(0, 255, 65, 0.3);
+            padding-bottom: 10px;
+        }
+
+        /* ============================================
+           FORM STYLING
+           ============================================ */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00d9ff;
+            font-weight: 500;
             font-size: 14px;
         }
 
-        .error {
-            background: rgba(255, 0, 100, 0.2);
-            border: 1px solid #ff0064;
-            color: #ff0064;
-            padding: 15px;
-            text-align: center;
-            border-radius: 3px;
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s;
         }
 
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(224, 224, 224, 0.5);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #00ff41;
+            background-color: rgba(0, 255, 65, 0.1);
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* ============================================
+           BUTTON STYLING
+           ============================================ */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background-color: #00ff41;
+            color: #000;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #00cc33;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #00d9ff;
+            color: #000;
+            width: 100%;
+        }
+
+        .btn-secondary:hover {
+            background-color: #00b8cc;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+        }
+
+        /* ============================================
+           INFO CARDS
+           ============================================ */
+        .info-card {
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 4px solid #00ff41;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .info-card h3 {
+            color: #00ff41;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .info-card p {
+            color: #b0b0b0;
+            font-size: 14px;
+        }
+
+        /* ============================================
+           EVENTS FEED
+           ============================================ */
+        .events-feed {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .event-item {
+            background: rgba(0, 255, 65, 0.05);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .event-item:hover {
+            background: rgba(0, 255, 65, 0.1);
+            border-color: #00ff41;
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .event-title {
+            color: #00ff41;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .event-date {
+            color: #00d9ff;
+            font-size: 12px;
+        }
+
+        .event-description {
+            color: #b0b0b0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .event-category {
+            display: inline-block;
+            background-color: rgba(0, 217, 255, 0.2);
+            color: #00d9ff;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        /* ============================================
+           STATS SECTION
+           ============================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            color: #00ff41;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #00d9ff;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* ============================================
+           SUCCESS MESSAGE
+           ============================================ */
         .message {
             padding: 15px;
+            border-radius: 4px;
             margin-bottom: 20px;
-            border-radius: 3px;
-            text-align: center;
+            display: none;
+            animation: slideIn 0.3s ease-out;
         }
 
-        .success {
-            background: rgba(0, 255, 65, 0.2);
-            color: #00ff41;
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background-color: rgba(0, 255, 65, 0.1);
             border: 1px solid #00ff41;
+            color: #00ff41;
+            display: block;
+        }
+
+        .message.error {
+            background-color: rgba(255, 65, 65, 0.1);
+            border: 1px solid #ff4141;
+            color: #ff4141;
+            display: block;
+        }
+
+        /* ============================================
+           SCROLLBAR STYLING
+           ============================================ */
+        .events-feed::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .events-feed::-webkit-scrollbar-track {
+            background: rgba(0, 255, 65, 0.1);
+            border-radius: 3px;
+        }
+
+        .events-feed::-webkit-scrollbar-thumb {
+            background: #00ff41;
+            border-radius: 3px;
+        }
+
+        .events-feed::-webkit-scrollbar-thumb:hover {
+            background: #00cc33;
+        }
+
+        /* ============================================
+           RESPONSIVE DESIGN
+           ============================================ */
+        @media (max-width: 768px) {
+            .dashboard-content {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .navbar-menu {
+                flex-direction: column;
+                gap: 15px;
+                width: 100%;
+            }
+
+            .navbar-menu a {
+                display: block;
+            }
+
+            .dashboard-header h1 {
+                font-size: 28px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px 10px;
+            }
+
+            .section {
+                padding: 15px;
+            }
+
+            .dashboard-header h1 {
+                font-size: 20px;
+            }
+
+            .section-title {
+                font-size: 18px;
+            }
+
+            .navbar-brand {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
 <body>
-
-    <div class="navbar">
-        <h1>> EXECUTIVE_DASHBOARD</h1>
-        <div class="nav-links">
-            <a href="home.html">Home</a>
-            <button onclick="handleLogout()">Logout</button>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">⚔️ CYBER SENTINELS</div>
+        <div class="navbar-menu">
+            <a href="home.html" id="home-link">Home</a>
+            <a href="team.html" id="team-link">Team</a>
+            <a href="about.html" id="about-link">About</a>
+            <button class="logout-btn" id="logout-btn">Logout</button>
         </div>
-    </div>
+    </nav>
 
+    <!-- Main Container -->
     <div class="container">
-        <div class="dashboard-title">Welcome, Executive</div>
-        <div id="content">
-            <div class="loading">Loading your information...</div>
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <h1>Cyber Defense Dashboard</h1>
+            <p>Monitor and manage security events in real-time</p>
+        </div>
+
+        <!-- Messages -->
+        <div id="success-message" class="message success" style="display: none;"></div>
+        <div id="error-message" class="message error" style="display: none;"></div>
+
+        <!-- Dashboard Content Grid -->
+        <div class="dashboard-content">
+            <!-- Add Event Post Section -->
+            <div class="section">
+                <h2 class="section-title">📝 Add Event Post</h2>
+                
+                <form id="event-form">
+                    <div class="form-group">
+                        <label for="event-title">Event Title</label>
+                        <input 
+                            type="text" 
+                            id="event-title" 
+                            placeholder="e.g., Security Audit Completed"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="event-category">Category</label>
+                        <select id="event-category" required>
+                            <option value="">Select a category</option>
+                            <option value="Security">🔒 Security Breach</option>
+                            <option value="Update">🔄 System Update</option>
+                            <option value="Training">📚 Training Session</option>
+                            <option value="Event">📅 Event</option>
+                            <option value="Alert">⚠️ Security Alert</option>
+                            <option value="Achievement">🏆 Achievement</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="event-description">Description</label>
+                        <textarea 
+                            id="event-description" 
+                            placeholder="Provide detailed information about the event..."
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="event-date">Date & Time</label>
+                        <input 
+                            type="datetime-local" 
+                            id="event-date"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Post Event</button>
+                </form>
+            </div>
+
+            <!-- Events Feed Section -->
+            <div class="section">
+                <h2 class="section-title">📺 Events Feed</h2>
+                
+                <div class="events-feed" id="events-feed">
+                    <div class="event-item">
+                        <div class="event-header">
+                            <span class="event-title">System Initialized</span>
+                            <span class="event-date">Today, 09:00 AM</span>
+                        </div>
+                        <p class="event-description">Cyber Sentinels Dashboard has been successfully initialized and is ready for event logging.</p>
+                        <span class="event-category">System</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="section" style="margin-top: 40px;">
+            <h2 class="section-title">📊 Dashboard Statistics</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-number" id="total-events">1</div>
+                    <div class="stat-label">Total Events</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="security-alerts">0</div>
+                    <div class="stat-label">Security Alerts</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="team-members">15</div>
+                    <div class="stat-label">Team Members</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="daily-active">8</div>
+                    <div class="stat-label">Daily Active</div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h3>🛡️ Security Status</h3>
+                <p>All systems operational. Security protocols active. No major threats detected.</p>
+            </div>
         </div>
     </div>
 
+    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // ========== Global Variables ==========
-        const SUPABASE_URL = 'https://fleqkgloxgfgpcugmvza.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsZXFrZ2xveGdmZ3BjdWdtdnphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NzAyMTMsImV4cCI6MjA4ODQ0NjIxM30.jBYtHQT1tsGFkYOH29PRl0nZj65G4_m4CARdZ1ajLsQ';
-        
-        let supabaseClient = null;
 
-        // ========== Initialize on Load ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            const { createClient } = window.supabase;
-            supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+    <script>
+        /* ============================================
+           SUPABASE INITIALIZATION
+           ============================================ */
+        const supabaseUrl = 'https://wqltbuvcrvvpvukzkvdc.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxbHRidXZjcnZ2cHZ1a3prdmRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NDk3NzMsImV4cCI6MjA1NTQyNTc3M30.lJq3-eKjM4i7lKvTMH6fMNpvPRPYKL3mVq0wVq5PYMU';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        /* ============================================
+           AUTHENTICATION CHECK
+           ============================================ */
+        async function checkAuth() {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session) {
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error('Auth check error:', error);
+            }
+        }
+
+        checkAuth();
+
+        /* ============================================
+           EVENT MANAGEMENT
+           ============================================ */
+
+        /**
+         * Format date to readable string
+         */
+        function formatDate(dateString) {
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        /**
+         * Display message to user
+         */
+        function showMessage(message, type = 'success') {
+            const messageEl = document.getElementById(`${type}-message`);
+            messageEl.textContent = message;
+            messageEl.style.display = 'block';
             
-            // Load dashboard data
-            loadDashboard();
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 5000);
+        }
+
+        /**
+         * Create event HTML element
+         */
+        function createEventElement(event) {
+            return `
+                <div class="event-item">
+                    <div class="event-header">
+                        <span class="event-title">${event.title}</span>
+                        <span class="event-date">${formatDate(event.date)}</span>
+                    </div>
+                    <p class="event-description">${event.description}</p>
+                    <span class="event-category">${event.category}</span>
+                </div>
+            `;
+        }
+
+        /**
+         * Load events from Supabase
+         */
+        async function loadEvents() {
+            try {
+                const { data, error } = await supabase
+                    .from('events')
+                    .select('*')
+                    .order('date', { ascending: false });
+
+                if (error) throw error;
+
+                const feedEl = document.getElementById('events-feed');
+                
+                if (data && data.length > 0) {
+                    feedEl.innerHTML = data.map(event => createEventElement(event)).join('');
+                    updateStats(data);
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+        }
+
+        /**
+         * Add event to Supabase
+         */
+        async function addEvent(eventData) {
+            try {
+                const { data, error } = await supabase
+                    .from('events')
+                    .insert([eventData])
+                    .select();
+
+                if (error) throw error;
+
+                showMessage('✓ Event posted successfully!', 'success');
+                document.getElementById('event-form').reset();
+                loadEvents();
+            } catch (error) {
+                console.error('Error adding event:', error);
+                showMessage('✗ Failed to post event. Please try again.', 'error');
+            }
+        }
+
+        /**
+         * Update statistics
+         */
+        function updateStats(events) {
+            document.getElementById('total-events').textContent = events.length;
+            
+            const securityAlerts = events.filter(e => 
+                e.category === 'Security' || e.category === 'Alert'
+            ).length;
+            document.getElementById('security-alerts').textContent = securityAlerts;
+        }
+
+        /* ============================================
+           FORM SUBMISSION
+           ============================================ */
+        document.getElementById('event-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('event-title').value.trim();
+            const category = document.getElementById('event-category').value;
+            const description = document.getElementById('event-description').value.trim();
+            const date = document.getElementById('event-date').value;
+
+            if (!title || !category || !description || !date) {
+                showMessage('✗ Please fill all fields', 'error');
+                return;
+            }
+
+            const eventData = {
+                title,
+                category,
+                description,
+                date: new Date(date).toISOString(),
+                created_at: new Date().toISOString()
+            };
+
+            await addEvent(eventData);
         });
 
-        // ========== Load Dashboard ==========
-        async function loadDashboard() {
-            console.log('Loading dashboard...');
-            
-            const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-
-            console.log('Auth user:', { user, userError });
-
-            if (userError || !user) {
-                console.error('No user found, redirecting to auth');
-                window.location.href = 'auth.html';
-                return;
-            }
-
-            if (!user.email_confirmed_at) {
-                document.getElementById('content').innerHTML = '<div class="error">Your email is not verified. Please check your inbox for the verification link.</div>';
-                return;
-            }
-
+        /* ============================================
+           LOGOUT FUNCTIONALITY
+           ============================================ */
+        document.getElementById('logout-btn').addEventListener('click', async () => {
             try {
-                // Get club_id from user metadata
-                const clubId = user.user_metadata?.club_id;
-                const name = user.user_metadata?.name || 'Executive';
-                const role = user.user_metadata?.role || 'Member';
-
-                console.log('User metadata:', { clubId, name, role });
-
-                if (!clubId) {
-                    throw new Error('Club ID not found in your profile');
-                }
-
-                // Fetch additional info from executive_id table
-                const { data: memberData, error: memberError } = await supabaseClient
-                    .from('executive_id')
-                    .select('*')
-                    .eq('club_id', clubId)
-                    .single();
-
-                console.log('Member data:', { memberData, memberError });
-
-                if (memberError) {
-                    console.error('Member query error:', memberError);
-                    throw new Error('Could not load member information: ' + memberError.message);
-                }
-
-                // Display dashboard
-                const html = `
-                    <div class="member-info">
-                        <div class="info-row">
-                            <span class="info-label">Name:</span>
-                            <span class="info-value">${memberData.name || 'N/A'}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Email:</span>
-                            <span class="info-value">${user.email}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Club ID:</span>
-                            <span class="info-value">${clubId}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Role:</span>
-                            <span class="info-value">${memberData.role || 'N/A'}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Status:</span>
-                            <span class="info-value">Verified ✓</span>
-                        </div>
-                    </div>
-                `;
-                document.getElementById('content').innerHTML = html;
-                console.log('Dashboard loaded successfully');
-
+                await supabase.auth.signOut();
+                window.location.href = 'index.html';
             } catch (error) {
-                console.error('Dashboard error:', error);
-                document.getElementById('content').innerHTML = `<div class="error">Error: ${error.message}</div>`;
+                console.error('Logout error:', error);
+                showMessage('✗ Logout failed', 'error');
             }
-        }
+        });
 
-        // ========== Logout Handler ==========
-        async function handleLogout() {
-            const { error } = await supabaseClient.auth.signOut();
-            if (error) {
-                alert('Logout error: ' + error.message);
-            } else {
-                window.location.href = 'home.html';
-            }
-        }
+        /* ============================================
+           INITIALIZATION
+           ============================================ */
+        window.addEventListener('load', () => {
+            loadEvents();
+        });
     </script>
 </body>
 </html>

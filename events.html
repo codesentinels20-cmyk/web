@@ -489,26 +489,38 @@
            ============================================ */
 
         /**
-         * Load events from Supabase
+         * Load events from Supabase with timeout
          */
         async function loadEvents() {
             try {
                 console.log('Starting to load events...');
                 
-                const { data, error } = await supabase
-                    .from('events')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+                // Create a timeout promise
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Request timeout - Supabase database may be unavailable')), 8000)
+                );
+
+                // Race between timeout and actual request
+                const { data, error } = await Promise.race([
+                    supabase
+                        .from('events')
+                        .select('*')
+                        .order('created_at', { ascending: false }),
+                    timeoutPromise
+                ]);
 
                 console.log('Supabase response:', { data, error });
 
                 if (error) {
                     console.error('Error loading events:', error);
                     
-                    // If table doesn't exist, show helpful message
-                    if (error.message.includes('relation') || error.message.includes('does not exist') || error.code === 'PGRST116') {
+                    // If table doesn't exist or timeout, show demo data
+                    if (error.message.includes('relation') || 
+                        error.message.includes('does not exist') || 
+                        error.code === 'PGRST116' ||
+                        error.message.includes('timeout')) {
                         // Use demo data instead
-                        console.log('Events table not found, using demo data');
+                        console.log('Using demo data');
                         allEvents = [
                             {
                                 id: 1,
@@ -532,7 +544,6 @@
                                 <div class="empty-state">
                                     <h2>Error Loading Events</h2>
                                     <p><strong>Error:</strong> ${error.message}</p>
-                                    <p><strong>Code:</strong> ${error.code || 'Unknown'}</p>
                                     <a href="home.html" class="back-btn">Back to Home</a>
                                 </div>
                             </div>
@@ -547,15 +558,26 @@
                 renderEvents();
             } catch (error) {
                 console.error('Unexpected error:', error);
-                document.getElementById('events-container').innerHTML = `
-                    <div style="grid-column: 1 / -1;">
-                        <div class="empty-state">
-                            <h2>Error Loading Events</h2>
-                            <p>${error.message}</p>
-                            <a href="home.html" class="back-btn">Back to Home</a>
-                        </div>
-                    </div>
-                `;
+                
+                // Show demo data on any error
+                console.log('Showing demo data due to error');
+                allEvents = [
+                    {
+                        id: 1,
+                        title: 'Welcome to Cyber Sentinels Events',
+                        description: 'This is the events page. Events posted from the dashboard will appear here automatically.',
+                        date: new Date().toISOString(),
+                        created_at: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        title: 'Events Table Setup Required',
+                        description: 'To store real events, please create an "events" table in Supabase with columns: id, title, description, date, created_at',
+                        date: new Date(Date.now() - 86400000).toISOString(),
+                        created_at: new Date(Date.now() - 86400000).toISOString()
+                    }
+                ];
+                renderEvents();
             }
         }
 

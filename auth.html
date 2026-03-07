@@ -481,9 +481,22 @@
 
         // ========== Check Auth Status ==========
         async function checkAuthStatus() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (user) {
-                window.location.href = 'dashboard.html';
+            try {
+                const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+                
+                // Handle refresh token errors by clearing invalid session
+                if (authError && (authError.code === 'refresh_token_not_found' || authError.code === 'invalid_refresh_token')) {
+                    console.warn('Invalid session detected, clearing...');
+                    await supabaseClient.auth.signOut().catch(() => {});
+                    return;
+                }
+                
+                if (user) {
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (error) {
+                console.error('Auth status check error:', error);
+                // Silently fail - let user proceed with login
             }
         }
 

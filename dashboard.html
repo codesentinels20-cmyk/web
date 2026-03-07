@@ -325,15 +325,29 @@
         async function loadDashboard() {
             console.log('Loading dashboard...');
             
-            const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+            try {
+                const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
 
-            console.log('Auth user:', { user, userError });
+                console.log('Auth user:', { user, userError });
 
-            if (userError || !user) {
-                console.error('No user found, redirecting to auth');
-                window.location.href = 'auth.html';
-                return;
-            }
+                // Handle refresh token errors
+                if (userError) {
+                    if (userError.code === 'refresh_token_not_found' || userError.code === 'invalid_refresh_token') {
+                        console.warn('Invalid session, signing out...');
+                        await supabaseClient.auth.signOut().catch(() => {});
+                        window.location.href = 'home.html';
+                        return;
+                    }
+                    console.error('Auth error:', userError);
+                    window.location.href = 'auth.html';
+                    return;
+                }
+
+                if (!user) {
+                    console.error('No user found, redirecting to auth');
+                    window.location.href = 'auth.html';
+                    return;
+                }
 
             if (!user.email_confirmed_at) {
                 document.getElementById('content').innerHTML = '<div class="error">Your email is not verified. Please check your inbox for the verification link.</div>';
@@ -396,6 +410,12 @@
 
             } catch (error) {
                 console.error('Dashboard error:', error);
+                // Handle refresh token errors in data fetching
+                if (error.code === 'refresh_token_not_found' || error.code === 'invalid_refresh_token') {
+                    await supabaseClient.auth.signOut().catch(() => {});
+                    window.location.href = 'home.html';
+                    return;
+                }
                 document.getElementById('content').innerHTML = `<div class="error">Error: ${error.message}</div>`;
             }
         }

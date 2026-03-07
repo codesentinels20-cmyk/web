@@ -451,7 +451,8 @@
 
     <nav>
         <div class="nav-container">
-            <ul class="nav-menu">
+            <a href="home.html" class="logo" style="font-size: 20px; color: #00ff41; text-decoration: none; font-weight: bold;">CYBER SENTINELS</a>
+            <ul class="nav-menu" id="navMenu">
                 <li><a href="home.html">HOME</a></li>
                 <li><a href="home.html#about">ABOUT</a></li>
                 <li><a href="#">EVENTS</a></li>
@@ -459,9 +460,16 @@
                 <li><a href="#">RESOURCES</a></li>
                 <li><a href="#">CONTACT</a></li>
                 <li><a href="dashboard.html" id="dashboardLink" style="display: none;">DASHBOARD</a></li>
+                <li style="border: none; padding: 15px 20px;">
+                    <button class="executive-login" id="loginBtn">EXECUTIVE LOGIN</button>
+                    <button id="logoutBtn" style="display: none; background: #ff6600;">LOGOUT</button>
+                </li>
             </ul>
-            <button class="executive-login" id="loginBtn">EXECUTIVE LOGIN</button>
-            <button id="logoutBtn" style="display: none; background: #ff6600; margin-left: 15px;">LOGOUT</button>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </nav>
 
@@ -668,6 +676,7 @@
         </div>
     </section>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         class MatrixRain {
             constructor(canvasId) {
@@ -718,6 +727,80 @@
 
         new MatrixRain('matrix-canvas');
 
+        // ========== Hamburger Menu Toggle ==========
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+        
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                navMenu.classList.toggle('active');
+            });
+        }
+
+        // Close menu when a link is clicked
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('nav')) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+
+        // ========== Auth State Management ==========
+        document.addEventListener('DOMContentLoaded', async function() {
+            const { createClient } = window.supabase;
+            const supabaseClient = createClient(
+                'https://fleqkgloxgfgpcugmvza.supabase.co',
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsZXFrZ2xveGdmZ3BjdWdtdnphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NzAyMTMsImV4cCI6MjA4ODQ0NjIxM30.jBYtHQT1tsGFkYOH29PRl0nZj65G4_m4CARdZ1ajLsQ'
+            );
+            
+            const dashboardLink = document.getElementById('dashboardLink');
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            try {
+                const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+                
+                // Handle refresh token errors
+                if (authError && (authError.code === 'refresh_token_not_found' || authError.code === 'invalid_refresh_token')) {
+                    console.warn('Invalid session, clearing...');
+                    await supabaseClient.auth.signOut().catch(() => {});
+                    dashboardLink.style.display = 'none';
+                    loginBtn.style.display = 'block';
+                    logoutBtn.style.display = 'none';
+                    return;
+                }
+                
+                if (user && user.email_confirmed_at) {
+                    dashboardLink.style.display = 'block';
+                    loginBtn.style.display = 'none';
+                    logoutBtn.style.display = 'block';
+                    
+                    logoutBtn.addEventListener('click', async () => {
+                        await supabaseClient.auth.signOut();
+                        window.location.href = 'home.html';
+                    });
+                } else {
+                    dashboardLink.style.display = 'none';
+                    loginBtn.style.display = 'block';
+                    logoutBtn.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Auth error:', error);
+                dashboardLink.style.display = 'none';
+                loginBtn.style.display = 'block';
+                logoutBtn.style.display = 'none';
+            }
+        });
+
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -728,7 +811,7 @@
             });
         });
 
-        document.querySelector('.executive-login').addEventListener('click', () => {
+        document.getElementById('loginBtn').addEventListener('click', () => {
             window.location.href = 'auth.html';
         });
 

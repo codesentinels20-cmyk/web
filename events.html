@@ -225,18 +225,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        let supabaseUrl = 'https://wqltbuvcrvvpvukzkvdc.supabase.co';
-        let supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxbHRidXZjcnZ2cHZ1a3prdmRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NDk3NzMsImV4cCI6MjA1NTQyNTc3M30.lJq3-eKjM4i7lKvTMH6fMNpvPRPYKL3mVq0wVq5PYMU';
-        let supabase;
-
-        try {
-            supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        } catch (e) {
-            console.error('Supabase init error:', e);
-        }
-
         function formatDate(dateString) {
             const options = { 
                 year: 'numeric', 
@@ -264,53 +253,30 @@
             return div.innerHTML;
         }
 
-        async function loadEvents() {
+        function loadEvents() {
             try {
-                console.log('Loading events...');
+                console.log('Loading events from localStorage...');
                 
-                if (!supabase) {
-                    throw new Error('Supabase client not initialized');
-                }
-
-                const { data, error } = await supabase
-                    .from('events')
-                    .select('*')
-                    .order('date', { ascending: false });
-
-                console.log('Response:', { data, error });
+                const events = JSON.parse(localStorage.getItem('cybersecurity_events')) || [];
+                console.log('Events found:', events.length);
 
                 const content = document.getElementById('content');
 
-                if (error) {
-                    console.error('Database error:', error);
-                    content.innerHTML = `
-                        <div style="grid-column: 1 / -1;">
-                            <div class="empty-state">
-                                <h2>No Events Available</h2>
-                                <p>No events found. Try posting one from the dashboard first!</p>
-                                <a href="home.html" class="back-btn">Back to Home</a>
-                            </div>
-                        </div>
-                    `;
-                    return;
-                }
-
-                if (!data || data.length === 0) {
-                    console.log('No events in database');
+                if (!events || events.length === 0) {
+                    console.log('No events in storage');
                     content.innerHTML = `
                         <div style="grid-column: 1 / -1;">
                             <div class="empty-state">
                                 <h2>No Events Yet</h2>
                                 <p>Events posted from the dashboard will appear here</p>
-                                <a href="home.html" class="back-btn">Back to Home</a>
+                                <a href="dashboard.html" class="back-btn">Go to Dashboard</a>
                             </div>
                         </div>
                     `;
                     return;
                 }
 
-                console.log('Events found:', data.length);
-                content.innerHTML = data.map(event => createEventCard(event)).join('');
+                content.innerHTML = events.map(event => createEventCard(event)).join('');
 
             } catch (error) {
                 console.error('Error loading events:', error);

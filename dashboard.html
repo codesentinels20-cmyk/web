@@ -332,6 +332,203 @@
         }
 
         /* ============================================
+           EVENT ACTIONS
+           ============================================ */
+        .event-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn-edit, .btn-delete {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-edit {
+            background-color: #00d9ff;
+            color: #0a0a0a;
+        }
+
+        .btn-edit:hover {
+            background-color: #00b8cc;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+        }
+
+        .btn-delete {
+            background-color: #ff4141;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #cc3333;
+            box-shadow: 0 0 10px rgba(255, 65, 65, 0.5);
+        }
+
+        /* ============================================
+           MODAL STYLES
+           ============================================ */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.open {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+            border: 2px solid #00ff41;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #00ff41;
+            padding-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            color: #00ff41;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #00ff41;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: #00d9ff;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-body .form-group {
+            margin-bottom: 15px;
+        }
+
+        .modal-body label {
+            display: block;
+            color: #00d9ff;
+            font-weight: 500;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .modal-body input,
+        .modal-body textarea {
+            background: rgba(0, 255, 65, 0.05);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            color: #e0e0e0;
+            padding: 10px;
+            border-radius: 4px;
+            width: 100%;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .modal-body textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .modal-body input:focus,
+        .modal-body textarea:focus {
+            outline: none;
+            border-color: #00ff41;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel {
+            background-color: rgba(255, 65, 65, 0.2);
+            color: #ff4141;
+            padding: 10px 20px;
+            border: 1px solid #ff4141;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background-color: rgba(255, 65, 65, 0.3);
+            box-shadow: 0 0 10px rgba(255, 65, 65, 0.5);
+        }
+
+        .btn-save {
+            background-color: #00ff41;
+            color: #0a0a0a;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-save:hover {
+            background-color: #00cc33;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+        }
+
+        /* ============================================
            STATS SECTION
            ============================================ */
         .stats-grid {
@@ -583,6 +780,34 @@
         </div>
     </div>
 
+    <!-- Edit Event Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Event</h2>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="edit-title">Event Title</label>
+                    <input type="text" id="edit-title" placeholder="Event title">
+                </div>
+                <div class="form-group">
+                    <label for="edit-description">Description</label>
+                    <textarea id="edit-description" placeholder="Event description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-date">Date & Time</label>
+                    <input type="datetime-local" id="edit-date">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                <button class="btn-save" onclick="saveEditedEvent()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         /* ============================================
            AUTHENTICATION CHECK
@@ -641,7 +866,7 @@
         }
 
         /**
-         * Create event HTML element
+         * Create event HTML element with edit/delete buttons
          */
         function createEventElement(event) {
             return `
@@ -651,6 +876,10 @@
                         <span class="event-date">${formatDate(event.date)}</span>
                     </div>
                     <p class="event-description">${event.description}</p>
+                    <div class="event-actions">
+                        <button class="btn-edit" onclick="openEditModal(${event.id})">✏️ Edit</button>
+                        <button class="btn-delete" onclick="deleteEvent(${event.id})">🗑️ Delete</button>
+                    </div>
                 </div>
             `;
         }
@@ -720,6 +949,100 @@
             document.getElementById('total-events').textContent = events.length;
         }
 
+        /**
+         * Edit modal management
+         */
+        let currentEditingEventId = null;
+
+        function openEditModal(eventId) {
+            console.log('Opening edit modal for event:', eventId);
+            const events = JSON.parse(localStorage.getItem('cybersecurity_events')) || [];
+            const event = events.find(e => e.id === eventId);
+            
+            if (!event) {
+                console.error('Event not found:', eventId);
+                return;
+            }
+
+            currentEditingEventId = eventId;
+            document.getElementById('edit-title').value = event.title;
+            document.getElementById('edit-description').value = event.description;
+            
+            // Convert ISO date to datetime-local format
+            const dateObj = new Date(event.date);
+            const dateLocal = dateObj.toISOString().slice(0, 16);
+            document.getElementById('edit-date').value = dateLocal;
+            
+            document.getElementById('edit-modal').classList.add('open');
+        }
+
+        function closeEditModal() {
+            console.log('Closing edit modal');
+            document.getElementById('edit-modal').classList.remove('open');
+            currentEditingEventId = null;
+        }
+
+        function saveEditedEvent() {
+            if (!currentEditingEventId) return;
+
+            const title = document.getElementById('edit-title').value.trim();
+            const description = document.getElementById('edit-description').value.trim();
+            const date = document.getElementById('edit-date').value;
+
+            if (!title || !description || !date) {
+                showMessage('✗ Please fill all fields', 'error');
+                return;
+            }
+
+            try {
+                const events = JSON.parse(localStorage.getItem('cybersecurity_events')) || [];
+                const eventIndex = events.findIndex(e => e.id === currentEditingEventId);
+                
+                if (eventIndex === -1) {
+                    showMessage('✗ Event not found', 'error');
+                    return;
+                }
+
+                // Update event
+                events[eventIndex] = {
+                    ...events[eventIndex],
+                    title,
+                    description,
+                    date: new Date(date).toISOString(),
+                    updated_at: new Date().toISOString()
+                };
+
+                localStorage.setItem('cybersecurity_events', JSON.stringify(events));
+                showMessage('✓ Event updated successfully!', 'success');
+                closeEditModal();
+                loadEvents();
+                console.log('Event saved:', events[eventIndex]);
+            } catch (error) {
+                console.error('Error saving event:', error);
+                showMessage('✗ Failed to save event', 'error');
+            }
+        }
+
+        function deleteEvent(eventId) {
+            if (!confirm('Are you sure you want to delete this event?')) {
+                return;
+            }
+
+            try {
+                console.log('Deleting event:', eventId);
+                let events = JSON.parse(localStorage.getItem('cybersecurity_events')) || [];
+                events = events.filter(e => e.id !== eventId);
+                
+                localStorage.setItem('cybersecurity_events', JSON.stringify(events));
+                showMessage('✓ Event deleted successfully!', 'success');
+                loadEvents();
+                console.log('Event deleted. Remaining events:', events.length);
+            } catch (error) {
+                console.error('Error deleting event:', error);
+                showMessage('✗ Failed to delete event', 'error');
+            }
+        }
+
         /* ============================================
            FORM SUBMISSION
            ============================================ */
@@ -774,6 +1097,15 @@
            ============================================ */
         window.addEventListener('load', () => {
             loadEvents();
+        });
+
+        /* ============================================
+           MODAL CLICK-OUTSIDE TO CLOSE
+           ============================================ */
+        document.getElementById('edit-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
         });
     </script>
 </body>

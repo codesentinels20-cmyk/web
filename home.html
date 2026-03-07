@@ -488,6 +488,11 @@
         class MatrixRain {
             constructor(canvasId) {
                 this.canvas = document.getElementById(canvasId);
+                if (!this.canvas) {
+                    console.warn('Matrix canvas not found');
+                    return;
+                }
+
                 this.ctx = this.canvas.getContext('2d');
                 this.canvas.width = window.innerWidth;
                 this.canvas.height = window.innerHeight;
@@ -507,6 +512,10 @@
             }
 
             animate() {
+                if (!this.canvas || !this.ctx || !this.words) {
+                    return;
+                }
+
                 this.ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 

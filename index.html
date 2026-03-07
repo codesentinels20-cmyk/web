@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Sentinels (KEC) - Terminal Access</title>
+    <style>
+        /* ============================================
+           RESET & BASE STYLES
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            color: #00ff41;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            letter-spacing: 0.05em;
+            position: relative;
+        }
+
+        /* Matrix rain background */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.1;
+        }
+
+        /* ============================================
+           TERMINAL CONTAINER
+           ============================================ */
+        .terminal-container {
+            width: 90%;
+            max-width: 900px;
+            height: 85vh;
+            max-height: 600px;
+            background-color: rgba(0, 0, 0, 0.95);
+            border: 2px solid #00ff41;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.5),
+                        inset 0 0 20px rgba(0, 255, 65, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 10;
+        }
+
+        /* Glow effect for terminal */
+        .terminal-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+            pointer-events: none;
+            border-radius: 8px;
+        }
+
+        .terminal-content {
+            position: relative;
+            z-index: 2;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ============================================
+           BOOT SEQUENCE LINES
+           ============================================ */
+        .boot-line {
+            margin: 8px 0;
+            line-height: 1.6;
+            min-height: 24px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Typing animation for text */
+        .typing {
+            animation: typing 0.05s steps(1, end);
+        }
+
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        .boot-title {
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .boot-status {
+            color: #00ff41;
+        }
+
+        .status-ok {
+            color: #00ff41;
+            font-weight: bold;
+        }
+
+        .status-box {
+            display: inline-block;
+            width: 35px;
+            margin-right: 8px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        /* ============================================
+           GLITCH EFFECTS
+           ============================================ */
+        @keyframes glitch {
+            0% {
+                text-shadow: 0.05em 0 0 #ff00ff, -0.025em -0.03em 0 #00ffff;
+            }
+            14% {
+                text-shadow: 0.05em 0 0 #ff00ff, -0.025em -0.03em 0 #00ffff;
+            }
+            15% {
+                text-shadow: -0.05em -0.025em 0 #ff00ff, 0.025em 0.025em 0 #00ffff;
+            }
+            49% {
+                text-shadow: -0.05em -0.025em 0 #ff00ff, 0.025em 0.025em 0 #00ffff;
+            }
+            50% {
+                text-shadow: 0.025em 0.05em 0 #ff00ff, 0.05em 0 0 #00ffff;
+            }
+            99% {
+                text-shadow: 0.025em 0.05em 0 #ff00ff, 0.05em 0 0 #00ffff;
+            }
+            100% {
+                text-shadow: -0.025em 0 0 #ff00ff, -0.05em -0.025em 0 #00ffff;
+            }
+        }
+
+        .glitch {
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch-skew {
+            0% {
+                transform: skewX(0deg);
+            }
+            10% {
+                transform: skewX(-10deg);
+            }
+            20% {
+                transform: skewX(10deg);
+            }
+            30% {
+                transform: skewX(0deg);
+            }
+            100% {
+                transform: skewX(0deg);
+            }
+        }
+
+        .glitch-skew {
+            animation: glitch-skew 3s infinite;
+        }
+
+        /* Vanishing effect - fade out and disappear */
+        @keyframes vanish {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            50% {
+                opacity: 0.5;
+                transform: translateY(-5px);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+        }
+
+        @keyframes pageExit {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .exit-animation {
+            animation: pageExit 0.3s ease-out forwards;
+        }
+
+        @keyframes typing-effect {
+            from {
+                width: 0;
+                opacity: 1;
+            }
+            to {
+                width: 100%;
+                opacity: 1;
+            }
+        }
+
+        .typing-text {
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 2px solid #00ff41;
+            padding-right: 5px;
+        }
+
+        .typing-animation {
+            animation: typing-effect 0.03s steps(60, end);
+        }
+
+        /* ============================================
+           COMMAND INPUT AREA
+           ============================================ */
+        .input-section {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 255, 65, 0.3);
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+
+        .prompt {
+            color: #00ff41;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        #command-input {
+            background-color: transparent;
+            border: none;
+            color: #00ff41;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            font-size: 16px;
+            outline: none;
+            flex: 1;
+            letter-spacing: 0.05em;
+            padding: 0;
+            caret-color: #00ff41;
+        }
+
+        /* Blinking cursor */
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background-color: #00ff41;
+            margin-left: 2px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 49% {
+                opacity: 1;
+            }
+            50%, 100% {
+                opacity: 0;
+            }
+        }
+
+        .cursor.hidden {
+            display: none;
+        }
+
+        /* ============================================
+           STATUS MESSAGES
+           ============================================ */
+        .message {
+            margin: 12px 0;
+            min-height: 24px;
+            line-height: 1.6;
+        }
+
+        .message.error {
+            color: #ff4141;
+        }
+
+        .message.success {
+            color: #00ff41;
+        }
+
+        .message.system {
+            color: #00d9ff;
+        }
+
+        /* ============================================
+           SCROLLBAR STYLING
+           ============================================ */
+        .terminal-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .terminal-container::-webkit-scrollbar-track {
+            background: rgba(0, 255, 65, 0.1);
+            border-radius: 4px;
+        }
+
+        .terminal-container::-webkit-scrollbar-thumb {
+            background: #00ff41;
+            border-radius: 4px;
+        }
+
+        .terminal-container::-webkit-scrollbar-thumb:hover {
+            background: #00cc33;
+        }
+
+        /* ============================================
+           RESPONSIVE DESIGN
+           ============================================ */
+        @media (max-width: 768px) {
+            .terminal-container {
+                max-height: 80vh;
+                padding: 20px;
+                border-width: 1px;
+            }
+
+            #command-input {
+                font-size: 14px;
+            }
+
+            .boot-line,
+            .message {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                font-size: 12px;
+            }
+
+            .terminal-container {
+                width: 95%;
+                max-height: 75vh;
+                padding: 15px;
+            }
+
+            #command-input,
+            .boot-line,
+            .message {
+                font-size: 12px;
+            }
+
+            .cursor {
+                width: 8px;
+                height: 16px;
+            }
+        }
+
+        /* ============================================
+           CUSTOM CURSOR
+           ============================================ */
+        * {
+            cursor: none;
+        }
+
+        .cursor-outer {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(0, 255, 65, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease;
+        }
+
+        .cursor-inner {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background-color: rgba(0, 255, 65, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-outer.hover {
+            width: 60px;
+            height: 60px;
+            border-color: rgba(0, 217, 255, 0.5);
+        }
+
+        .cursor-inner.hover {
+            background-color: rgba(0, 217, 255, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor-outer"></div>
+    <div class="cursor-inner"></div>
+
+    <!-- Matrix rain background -->
+    <canvas id="matrix-canvas"></canvas>
+
+    <div class="terminal-container">
+        <div class="terminal-content" id="terminal-content">
+            <!-- Boot sequence lines will be dynamically added here -->
+        </div>
+        <div class="terminal-content" id="terminal-content">
+            <!-- Boot sequence lines will be dynamically added here -->
+        </div>
+
+        <!-- Command Input Section -->
+        <div class="input-section">
+            <div class="input-line">
+                <span class="prompt">❯ </span>
+                <input 
+                    type="text" 
+                    id="command-input" 
+                    placeholder="enter system protocol..." 
+                    autocomplete="off"
+                    spellcheck="false"
+                >
+                <span class="cursor" id="cursor"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ============================================
+           MATRIX RAIN ANIMATION
+           ============================================ */
+        class MatrixRain {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+
+                // English words and characters for matrix effect
+                this.words = ['CYBER', 'SENTINEL', 'SECURITY', 'HACK', 'CODE', 'DEFEND', 'NETWORK', 'PROTOCOL', 'FIREWALL', 'ENCRYPT', 'SHIELD', 'THREAT', 'MONITOR', 'SCAN', 'ATTACK', 'DEFEND', 'PROTECT', '01010101', '11110000', '00001111'];
+                this.columns = Math.floor(this.canvas.width / 20);
+                this.drops = Array(this.columns).fill(0);
+                this.wordIndices = Array(this.columns).fill(0);
+
+                window.addEventListener('resize', () => {
+                    this.canvas.width = window.innerWidth;
+                    this.canvas.height = window.innerHeight;
+                    this.columns = Math.floor(this.canvas.width / 20);
+                });
+
+                this.animate();
+            }
+
+            animate() {
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                this.ctx.fillStyle = '#00ff41';
+                this.ctx.font = '15px JetBrains Mono, monospace';
+
+                for (let i = 0; i < this.columns; i++) {
+                    const wordIndex = this.wordIndices[i] % this.words.length;
+                    const word = this.words[wordIndex];
+                    const charIndex = Math.floor((this.drops[i] * 20) / 100) % word.length;
+                    const text = word.charAt(charIndex);
+                    
+                    this.ctx.fillText(text, i * 20, this.drops[i] * 20);
+
+                    if (this.drops[i] * 20 > this.canvas.height && Math.random() > 0.975) {
+                        this.drops[i] = 0;
+                        this.wordIndices[i]++;
+                    }
+                    this.drops[i]++;
+                }
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // Initialize matrix rain
+        new MatrixRain('matrix-canvas');
+
+        /* ============================================
+           SOUND EFFECTS (Web Audio API)
+           ============================================ */
+        class TerminalSounds {
+            constructor() {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            /**
+             * Play a beep sound
+             */
+            beep(frequency = 800, duration = 100) {
+                try {
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = 'sine';
+
+                    gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration / 1000);
+
+                    oscillator.start(this.audioContext.currentTime);
+                    oscillator.stop(this.audioContext.currentTime + duration / 1000);
+                } catch (e) {
+                    // Audio context may not be available
+                }
+            }
+
+            /**
+             * Play typing sound
+             */
+            type() {
+                this.beep(600, 50);
+            }
+
+            /**
+             * Play boot complete sound
+             */
+            bootComplete() {
+                this.beep(1200, 100);
+                setTimeout(() => this.beep(1500, 100), 150);
+            }
+
+            /**
+             * Play error sound
+             */
+            error() {
+                this.beep(300, 200);
+            }
+
+            /**
+             * Play access granted sound (ascending tones)
+             */
+            accessGranted() {
+                this.beep(800, 150);
+                setTimeout(() => this.beep(1000, 150), 200);
+                setTimeout(() => this.beep(1200, 150), 400);
+            }
+        }
+
+        const sounds = new TerminalSounds();
+
+        /* ============================================
+           CONFIGURATION & STATE
+           ============================================ */
+        const config = {
+            typingSpeed: 50,
+            lineDelay: 400,
+            inputDelay: 1000,
+            redirectDelay: 300,
+        };
+
+        const bootSequence = [
+            { type: 'title', text: 'Initializing Cyber Sentinels System...' },
+            { type: 'status', text: 'Loading Sentinel Core', status: 'OK' },
+            { type: 'status', text: 'Connecting to KEC Network', status: 'OK' },
+            { type: 'status', text: 'Checking Security Protocols', status: 'OK' },
+            { type: 'status', text: 'Activating Cyber Defense Grid', status: 'OK' },
+            { type: 'message', text: 'Welcome Agent.' },
+            { type: 'message', text: 'Type "enter" to access the system.' },
+        ];
+
+        let isBootSequenceComplete = false;
+        let isProcessingCommand = false;
+
+        /* ============================================
+           UTILITY FUNCTIONS
+           ============================================ */
+
+        /**
+         * Create a boot line element with typing animation
+         */
+        function createBootLineElement(content, type) {
+            const line = document.createElement('div');
+            line.className = 'boot-line';
+
+            if (type === 'title') {
+                line.classList.add('boot-title');
+                line.innerHTML = `<span class="typing-text">${content}</span>`;
+                animateTyping(line.querySelector('.typing-text'));
+            } else if (type === 'status') {
+                line.innerHTML = `<span class="boot-status typing-text">${content}</span>`;
+                animateTyping(line.querySelector('.typing-text'));
+            } else if (type === 'message') {
+                line.innerHTML = `<span class="typing-text">${content}</span>`;
+                animateTyping(line.querySelector('.typing-text'));
+            }
+
+            return line;
+        }
+
+        /**
+         * Animate typing effect for text
+         */
+        function animateTyping(element) {
+            const text = element.textContent;
+            element.textContent = '';
+            element.classList.add('typing-animation');
+
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index < text.length) {
+                    element.textContent += text.charAt(index);
+                    sounds.type();
+                    index++;
+                } else {
+                    element.classList.remove('typing-animation');
+                    element.style.borderRight = 'none';
+                    clearInterval(interval);
+                }
+            }, config.typingSpeed);
+        }
+
+        /**
+         * Add a glitch effect to an element
+         */
+        function addGlitchEffect(element) {
+            element.classList.add('glitch');
+            setTimeout(() => element.classList.remove('glitch'), 2000);
+        }
+
+        /**
+         * Create vanishing effect on all terminal lines
+         */
+        function vanishTerminalContent() {
+            const lines = document.querySelectorAll('.terminal-content > div');
+            lines.forEach((line, index) => {
+                setTimeout(() => {
+                    line.classList.add('vanishing');
+                }, index * 10);
+            });
+        }
+
+        /**
+         * Add a message to the terminal
+         */
+        function addMessage(text, messageClass = '') {
+            const line = document.createElement('div');
+            line.className = `message ${messageClass}`;
+            line.textContent = text;
+            document.getElementById('terminal-content').appendChild(line);
+            scrollToBottom();
+        }
+
+        /**
+         * Scroll terminal to bottom
+         */
+        function scrollToBottom() {
+            const terminal = document.querySelector('.terminal-container');
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        /**
+         * Show the command input and cursor
+         */
+        function showCommandInput() {
+            const input = document.getElementById('command-input');
+            input.disabled = false;
+            input.focus();
+            sounds.bootComplete();
+        }
+
+        /**
+         * Hide the cursor during processing
+         */
+        function hideCursor() {
+            document.getElementById('cursor').classList.add('hidden');
+        }
+
+        /**
+         * Show the cursor
+         */
+        function showCursor() {
+            document.getElementById('cursor').classList.remove('hidden');
+        }
+
+        /* ============================================
+           BOOT SEQUENCE ANIMATION
+           ============================================ */
+
+        /**
+         * Display boot sequence with typing animation
+         */
+        async function runBootSequence() {
+            const terminal = document.getElementById('terminal-content');
+
+            for (let i = 0; i < bootSequence.length; i++) {
+                const item = bootSequence[i];
+                const line = createBootLineElement(item.text, item.type);
+
+                terminal.appendChild(line);
+
+                // Add random glitch effect occasionally
+                if (Math.random() > 0.7) {
+                    setTimeout(() => addGlitchEffect(line), 100);
+                }
+
+                scrollToBottom();
+
+                await new Promise(resolve => setTimeout(resolve, config.lineDelay));
+            }
+
+            isBootSequenceComplete = true;
+
+            await new Promise(resolve => setTimeout(resolve, config.inputDelay));
+            showCommandInput();
+        }
+
+        /* ============================================
+           COMMAND PROCESSING
+           ============================================ */
+
+        /**
+         * Process user command
+         */
+        function processCommand(command) {
+            if (isProcessingCommand) return;
+
+            isProcessingCommand = true;
+            hideCursor();
+
+            const input = document.getElementById('command-input');
+            input.disabled = true;
+
+            const normalizedCommand = command.toLowerCase().trim();
+
+            if (normalizedCommand === 'enter') {
+                sounds.accessGranted();
+                addMessage('Access Granted. Launching Command Interface...', 'success');
+
+                // Add vanishing effect to terminal content
+                vanishTerminalContent();
+                
+                // Add exit animation to entire page
+                document.body.classList.add('exit-animation');
+
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, config.redirectDelay);
+            } else {
+                sounds.error();
+                addMessage("Unknown command. Type 'enter' to proceed.", 'error');
+
+                setTimeout(() => {
+                    input.disabled = false;
+                    input.value = '';
+                    input.focus();
+                    isProcessingCommand = false;
+                    showCursor();
+                    scrollToBottom();
+                }, 500);
+            }
+        }
+
+        /* ============================================
+           EVENT LISTENERS
+           ============================================ */
+
+        document.getElementById('command-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const command = e.target.value;
+                if (command.trim() === '') return;
+
+                const input = document.getElementById('command-input');
+                const prompt = document.querySelector('.prompt');
+                addMessage(`${prompt.textContent}${command}`);
+
+                processCommand(command);
+            }
+        });
+
+        /* ============================================
+           INITIALIZATION
+           ============================================ */
+
+        document.getElementById('command-input').disabled = true;
+
+        window.addEventListener('load', () => {
+            runBootSequence();
+        });
+
+        document.querySelector('.terminal-container').addEventListener('click', () => {
+            if (isBootSequenceComplete && !isProcessingCommand) {
+                document.getElementById('command-input').focus();
+            }
+        });
+
+        /* ============================================
+           CUSTOM CURSOR
+           ============================================ */
+        const cursorOuter = document.querySelector('.cursor-outer');
+        const cursorInner = document.querySelector('.cursor-inner');
+        
+        let mouseX = 0, mouseY = 0;
+        let outerX = 0, outerY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursorInner.style.left = mouseX + 'px';
+            cursorInner.style.top = mouseY + 'px';
+        });
+        
+        function animateCursor() {
+            outerX += (mouseX - outerX) * 0.15;
+            outerY += (mouseY - outerY) * 0.15;
+            cursorOuter.style.left = outerX + 'px';
+            cursorOuter.style.top = outerY + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        const interactiveElements = document.querySelectorAll('a, button, .terminal-container');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorOuter.classList.add('hover');
+                cursorInner.classList.add('hover');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorOuter.classList.remove('hover');
+                cursorInner.classList.remove('hover');
+            });
+        });
+
+        document.addEventListener('mouseleave', () => {
+            cursorOuter.style.opacity = '0';
+            cursorInner.style.opacity = '0';
+        });
+
+        document.addEventListener('mouseenter', () => {
+            cursorOuter.style.opacity = '1';
+            cursorInner.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>

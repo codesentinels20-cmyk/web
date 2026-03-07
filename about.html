@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Cyber Sentinels (KEC)</title>
+    <style>
+        /* ============================================
+           RESET & BASE STYLES
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            color: #00ff41;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            min-height: 100vh;
+            letter-spacing: 0.05em;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Matrix rain background */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.08;
+        }
+
+        /* ============================================
+           NAVIGATION
+           ============================================ */
+        .nav-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            border-bottom: 1px solid #00ff41;
+            padding: 15px 30px;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #00ff41;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-logo:hover {
+            text-shadow: 0 0 10px #00ff41;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #00ff41;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #00ff41;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            text-shadow: 0 0 10px #00ff41;
+        }
+
+        /* ============================================
+           MAIN CONTENT
+           ============================================ */
+        .main-content {
+            position: relative;
+            z-index: 10;
+            padding: 100px 20px 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ============================================
+           HERO SECTION
+           ============================================ */
+        .hero-section {
+            text-align: center;
+            padding: 60px 20px;
+            margin-bottom: 50px;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: glitch 3s infinite;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #00d9ff;
+            margin-bottom: 30px;
+        }
+
+        .hero-tagline {
+            font-size: 1rem;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        /* ASCII Art Banner */
+        .ascii-banner {
+            font-size: 0.6rem;
+            line-height: 1.2;
+            color: #00ff41;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        /* ============================================
+           INFO CARDS
+           ============================================ */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .info-card {
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff41;
+            border-radius: 8px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #00ff41, transparent);
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .info-card:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #00ff41;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title::before {
+            content: '>';
+            color: #00d9ff;
+        }
+
+        .card-content {
+            line-height: 1.8;
+            opacity: 0.9;
+        }
+
+        .card-content ul {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .card-content li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .card-content li::before {
+            content: '█';
+            position: absolute;
+            left: 0;
+            color: #00ff41;
+            font-size: 0.6rem;
+        }
+
+        /* ============================================
+           ABOUT SECTION
+           ============================================ */
+        .about-section {
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff41;
+            border-radius: 8px;
+            padding: 40px;
+            margin-bottom: 50px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+        }
+
+        .section-header .icon {
+            font-size: 1.5rem;
+        }
+
+        .about-content {
+            line-height: 2;
+            font-size: 1rem;
+        }
+
+        .about-content p {
+            margin-bottom: 20px;
+        }
+
+        .highlight {
+            color: #00d9ff;
+            font-weight: bold;
+        }
+
+        /* ============================================
+           STATS SECTION
+           ============================================ */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff41;
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #00d9ff;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+
+        /* ============================================
+           CORE VALUES
+           ============================================ */
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .value-item {
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 3px solid #00ff41;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .value-item:hover {
+            background: rgba(0, 255, 65, 0.1);
+            transform: translateX(5px);
+        }
+
+        .value-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #00d9ff;
+        }
+
+        .value-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        /* ============================================
+           TERMINAL STYLE FOOTER
+           ============================================ */
+        .footer {
+            border-top: 1px solid #00ff41;
+            padding: 30px;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .footer-text {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .footer-links a {
+            color: #00ff41;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            text-shadow: 0 0 10px #00ff41;
+        }
+
+        /* ============================================
+           GLITCH EFFECTS
+           ============================================ */
+        @keyframes glitch {
+            0% { text-shadow: 0.05em 0 0 #ff00ff, -0.025em -0.03em 0 #00ffff; }
+            14% { text-shadow: 0.05em 0 0 #ff00ff, -0.025em -0.03em 0 #00ffff; }
+            15% { text-shadow: -0.05em -0.025em 0 #ff00ff, 0.025em 0.025em 0 #00ffff; }
+            49% { text-shadow: -0.05em -0.025em 0 #ff00ff, 0.025em 0.025em 0 #00ffff; }
+            50% { text-shadow: 0.025em 0.05em 0 #ff00ff, 0.05em 0 0 #00ffff; }
+            99% { text-shadow: 0.025em 0.05em 0 #ff00ff, 0.05em 0 0 #00ffff; }
+            100% { text-shadow: -0.025em 0 0 #ff00ff, -0.05em -0.025em 0 #00ffff; }
+        }
+
+        /* Fade in animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .delay-3 { animation-delay: 0.3s; opacity: 0; }
+        .delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+        /* ============================================
+           SCROLLBAR STYLING
+           ============================================ */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 255, 65, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #00ff41;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00cc33;
+        }
+
+        /* ============================================
+           RESPONSIVE DESIGN
+           ============================================ */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .ascii-banner {
+                font-size: 0.4rem;
+            }
+
+            .nav-links {
+                gap: 15px;
+            }
+
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 80px 15px 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+                padding: 10px;
+            }
+
+            .hero-title {
+                font-size: 1.5rem;
+            }
+
+            .ascii-banner {
+                display: none;
+            }
+
+            .stat-box {
+                padding: 15px;
+            }
+
+            .stat-number {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* ============================================
+           CUSTOM CURSOR
+           ============================================ */
+        * {
+            cursor: none;
+        }
+
+        .cursor-outer {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(0, 255, 65, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease;
+        }
+
+        .cursor-inner {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background-color: rgba(0, 255, 65, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-outer.hover {
+            width: 60px;
+            height: 60px;
+            border-color: rgba(0, 217, 255, 0.5);
+        }
+
+        .cursor-inner.hover {
+            background-color: rgba(0, 217, 255, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor-outer"></div>
+    <div class="cursor-inner"></div>
+
+    <!-- Matrix rain background -->
+    <canvas id="matrix-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="nav-container">
+        <a href="home.html" class="nav-logo">
+            <span>⟨/⟩</span> CYBER_SENTINELS
+        </a>
+        <ul class="nav-links">
+            <li><a href="home.html">Home</a></li>
+            <li><a href="about.html" class="active">About</a></li>
+            <li><a href="team.html">Team</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section fade-in">
+            <pre class="ascii-banner">
+   ██████╗██╗   ██╗██████╗ ███████╗██████╗     ███████╗███████╗███╗   ██╗████████╗██╗███╗   ██╗███████╗██╗     ███████╗
+  ██╔════╝╚██╗ ██╔╝██╔══██╗██╔════╝██╔══██╗    ██╔════╝██╔════╝████╗  ██║╚══██╔══╝██║████╗  ██║██╔════╝██║     ██╔════╝
+  ██║      ╚████╔╝ ██████╔╝█████╗  ██████╔╝    ███████╗█████╗  ██╔██╗ ██║   ██║   ██║██╔██╗ ██║█████╗  ██║     ███████╗
+  ██║       ╚██╔╝  ██╔══██╗██╔══╝  ██╔══██╗    ╚════██║██╔══╝  ██║╚██╗██║   ██║   ██║██║╚██╗██║██╔══╝  ██║     ╚════██║
+  ╚██████╗   ██║   ██████╔╝███████╗██║  ██║    ███████║███████╗██║ ╚████║   ██║   ██║██║ ╚████║███████╗███████╗███████║
+   ╚═════╝   ╚═╝   ╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚═╝╚═╝  ╚═══╝╚══════╝╚══════╝╚══════╝
+            </pre>
+            <h1 class="hero-title">ABOUT US</h1>
+            <p class="hero-subtitle">[ SYSTEM_INFO :: ACCESSING CLASSIFIED DATA ]</p>
+            <p class="hero-tagline">
+                The premier cybersecurity club at Kings Engineering College, 
+                dedicated to building the next generation of cyber defenders.
+            </p>
+        </section>
+
+        <!-- Club Info Section -->
+        <section class="about-section fade-in delay-1">
+            <div class="section-header">
+                <span class="icon">📁</span>
+                <h2>CLUB_INFO.DAT</h2>
+            </div>
+            <div class="about-content">
+                <p>
+                    <span class="highlight">Cyber Sentinels</span> is the official cybersecurity club of 
+                    <span class="highlight">Kings Engineering College (KEC)</span>, established to foster 
+                    a community of passionate individuals dedicated to understanding, implementing, and 
+                    advancing cybersecurity practices.
+                </p>
+                <p>
+                    We are a diverse group of students, researchers, and enthusiasts who believe in the 
+                    power of knowledge sharing and hands-on learning. Our club serves as a platform for 
+                    members to explore various domains of cybersecurity including ethical hacking, 
+                    network security, cryptography, digital forensics, and secure software development.
+                </p>
+                <p>
+                    Through workshops, CTF competitions, guest lectures, and collaborative projects, 
+                    we aim to prepare our members for the challenges of the ever-evolving digital landscape.
+                </p>
+            </div>
+        </section>
+
+        <!-- Vision & Mission Cards -->
+        <section class="cards-container">
+            <div class="info-card fade-in delay-2">
+                <div class="card-icon"></div>
+                <h3 class="card-title">VISION</h3>
+                <div class="card-content">
+                    <p>
+                        To become the leading cybersecurity community in academia, producing skilled 
+                        professionals who can safeguard the digital infrastructure of tomorrow.
+                    </p>
+                    <ul>
+                        <li>Pioneer cybersecurity education in the region</li>
+                        <li>Bridge the gap between academia and industry</li>
+                        <li>Create ethical hackers and security researchers</li>
+                        <li>Build a safer digital world through knowledge</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="info-card fade-in delay-3">
+                <div class="card-icon"></div>
+                <h3 class="card-title">MISSION</h3>
+                <div class="card-content">
+                    <p>
+                        To provide practical, hands-on cybersecurity training and create opportunities 
+                        for students to develop real-world security skills.
+                    </p>
+                    <ul>
+                        <li>Conduct regular workshops & training sessions</li>
+                        <li>Participate in national & international CTFs</li>
+                        <li>Collaborate with industry professionals</li>
+                        <li>Promote responsible disclosure practices</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="stat-box fade-in delay-2">
+                <span class="stat-number" id="members-count">100+</span>
+                <span class="stat-label">Active Members</span>
+            </div>
+            <div class="stat-box fade-in delay-2">
+                <span class="stat-number">50+</span>
+                <span class="stat-label">Events Conducted</span>
+            </div>
+        </section>
+
+        <!-- Core Values Section -->
+        <section class="about-section fade-in delay-4">
+            <div class="section-header">
+                <span class="icon">⚡</span>
+                <h2>CORE_VALUES.SYS</h2>
+            </div>
+            <div class="values-grid">
+                <div class="value-item">
+                    <h4 class="value-title">🛡️ Integrity</h4>
+                    <p class="value-desc">
+                        Upholding ethical standards in all cybersecurity practices and promoting 
+                        responsible use of technical knowledge.
+                    </p>
+                </div>
+                <div class="value-item">
+                    <h4 class="value-title">🔬 Innovation</h4>
+                    <p class="value-desc">
+                        Encouraging creative problem-solving and staying ahead of emerging 
+                        threats through continuous research.
+                    </p>
+                </div>
+                <div class="value-item">
+                    <h4 class="value-title">🤝 Collaboration</h4>
+                    <p class="value-desc">
+                        Building a supportive community where knowledge is shared freely 
+                        and members grow together.
+                    </p>
+                </div>
+                <div class="value-item">
+                    <h4 class="value-title">📚 Excellence</h4>
+                    <p class="value-desc">
+                        Striving for the highest standards in learning, competitions, 
+                        and professional development.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-text">
+            © 2026 Cyber Sentinels - Kings Engineering College
+        </p>
+    </footer>
+
+    <script>
+        /* ============================================
+           MATRIX RAIN ANIMATION
+           ============================================ */
+        class MatrixRain {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+
+                this.words = ['CYBER', 'SENTINEL', 'SECURITY', 'HACK', 'CODE', 'DEFEND', 'NETWORK', 'PROTOCOL', 'FIREWALL', 'ENCRYPT'];
+                this.columns = Math.floor(this.canvas.width / 20);
+                this.drops = Array(this.columns).fill(0);
+                this.wordIndices = Array(this.columns).fill(0);
+
+                window.addEventListener('resize', () => {
+                    this.canvas.width = window.innerWidth;
+                    this.canvas.height = window.innerHeight;
+                    this.columns = Math.floor(this.canvas.width / 20);
+                });
+
+                this.animate();
+            }
+
+            animate() {
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                this.ctx.fillStyle = '#00ff41';
+                this.ctx.font = '15px JetBrains Mono, monospace';
+
+                for (let i = 0; i < this.columns; i++) {
+                    const wordIndex = this.wordIndices[i] % this.words.length;
+                    const word = this.words[wordIndex];
+                    const charIndex = Math.floor((this.drops[i] * 20) / 100) % word.length;
+                    const text = word.charAt(charIndex);
+                    
+                    this.ctx.fillText(text, i * 20, this.drops[i] * 20);
+
+                    if (this.drops[i] * 20 > this.canvas.height && Math.random() > 0.975) {
+                        this.drops[i] = 0;
+                        this.wordIndices[i]++;
+                    }
+                    this.drops[i]++;
+                }
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // Initialize matrix rain
+        new MatrixRain('matrix-canvas');
+
+        /* ============================================
+           COUNTER ANIMATION
+           ============================================ */
+        function animateCounter(element, target, duration = 2000) {
+            const start = 0;
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const current = Math.floor(progress * target);
+                element.textContent = current + '+';
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        /* ============================================
+           CUSTOM CURSOR
+           ============================================ */
+        try {
+            const cursorOuter = document.querySelector('.cursor-outer');
+            const cursorInner = document.querySelector('.cursor-inner');
+            
+            if (!cursorOuter || !cursorInner) {
+                console.error('Cursor elements not found');
+            } else {
+                let mouseX = 0;
+                let mouseY = 0;
+                let outerX = 0;
+                let outerY = 0;
+                
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    cursorInner.style.left = mouseX + 'px';
+                    cursorInner.style.top = mouseY + 'px';
+                });
+                
+                function animateCursor() {
+                    outerX += (mouseX - outerX) * 0.25;
+                    outerY += (mouseY - outerY) * 0.25;
+                    cursorOuter.style.left = outerX + 'px';
+                    cursorOuter.style.top = outerY + 'px';
+                    requestAnimationFrame(animateCursor);
+                }
+                animateCursor();
+                
+                const interactiveElements = document.querySelectorAll('a, button, input, .tab-btn, .info-card, .stat-box, .value-item');
+                interactiveElements.forEach(el => {
+                    el.addEventListener('mouseenter', () => {
+                        cursorOuter.classList.add('hover');
+                        cursorInner.classList.add('hover');
+                    });
+                    el.addEventListener('mouseleave', () => {
+                        cursorOuter.classList.remove('hover');
+                        cursorInner.classList.remove('hover');
+                    });
+                });
+                
+                document.addEventListener('mouseleave', () => {
+                    cursorOuter.style.opacity = '0';
+                    cursorInner.style.opacity = '0';
+                });
+                
+                document.addEventListener('mouseenter', () => {
+                    cursorOuter.style.opacity = '1';
+                    cursorInner.style.opacity = '1';
+                });
+            }
+        } catch (error) {
+            console.error('Cursor initialization error:', error);
+        }
+
+        // Add hover effect on interactive elements
+        const interactiveElements = document.querySelectorAll('a, button, .info-card, .stat-box, .value-item');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorOuter.classList.add('hover');
+                cursorInner.classList.add('hover');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorOuter.classList.remove('hover');
+                cursorInner.classList.remove('hover');
+            });
+        });
+
+        // Hide cursor when leaving window
+        document.addEventListener('mouseleave', () => {
+            cursorOuter.style.opacity = '0';
+            cursorInner.style.opacity = '0';
+        });
+
+        document.addEventListener('mouseenter', () => {
+            cursorOuter.style.opacity = '1';
+            cursorInner.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>

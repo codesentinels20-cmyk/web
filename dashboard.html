@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000000;
+            color: #00ff41;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            position: relative;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.95);
+            border-bottom: 2px solid #00ff41;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+        }
+
+        .navbar h1 {
+            font-size: 20px;
+            text-shadow: 0 0 10px #00ff41;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a, .nav-links button {
+            color: #00ff41;
+            text-decoration: none;
+            font-size: 12px;
+            cursor: pointer;
+            background: transparent;
+            border: 1px solid #00ff41;
+            padding: 8px 15px;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .nav-links a:hover, .nav-links button:hover {
+            background: #00ff41;
+            color: #0a0e27;
+            font-weight: bold;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #00ff41;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+
+        .dashboard-title {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #00ff41;
+        }
+
+        .member-info {
+            background: rgba(0, 255, 65, 0.05);
+            border: 1px solid #00ff41;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 3px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #0096ff;
+        }
+
+        .info-value {
+            color: #00ff41;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 14px;
+        }
+
+        .error {
+            background: rgba(255, 0, 100, 0.2);
+            border: 1px solid #ff0064;
+            color: #ff0064;
+            padding: 15px;
+            text-align: center;
+            border-radius: 3px;
+        }
+
+        .message {
+            padding: 15px;
+            margin-below: 20px;
+            border-radius: 3px;
+            text-align: center;
+        }
+
+        .success {
+            background: rgba(0, 255, 65, 0.2);
+            color: #00ff41;
+            border: 1px solid #00ff41;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h1>> EXECUTIVE_DASHBOARD</h1>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <button onclick="handleLogout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="dashboard-title">Welcome, Executive</div>
+        <div id="content">
+            <div class="loading">Loading your information...</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ========== Global Variables ==========
+        const SUPABASE_URL = 'https://fleqkgloxgfgpcugmvza.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsZXFrZ2xveGdmZ3BjdWdtdnphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NzAyMTMsImV4cCI6MjA4ODQ0NjIxM30.jBYtHQT1tsGFkYOH29PRl0nZj65G4_m4CARdZ1ajLsQ';
+        
+        let supabaseClient = null;
+
+        // ========== Initialize on Load ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            const { createClient } = window.supabase;
+            supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+            
+            // Load dashboard data
+            loadDashboard();
+        });
+
+        // ========== Load Dashboard ==========
+        async function loadDashboard() {
+            console.log('Loading dashboard...');
+            
+            const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+
+            console.log('Auth user:', { user, userError });
+
+            if (userError || !user) {
+                console.error('No user found, redirecting to auth');
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            if (!user.email_confirmed_at) {
+                document.getElementById('content').innerHTML = '<div class="error">Your email is not verified. Please check your inbox for the verification link.</div>';
+                return;
+            }
+
+            try {
+                // Get club_id from user metadata
+                const clubId = user.user_metadata?.club_id;
+                const name = user.user_metadata?.name || 'Executive';
+                const role = user.user_metadata?.role || 'Member';
+
+                console.log('User metadata:', { clubId, name, role });
+
+                if (!clubId) {
+                    throw new Error('Club ID not found in your profile');
+                }
+
+                // Fetch additional info from executive_id table
+                const { data: memberData, error: memberError } = await supabaseClient
+                    .from('executive_id')
+                    .select('*')
+                    .eq('club_id', clubId)
+                    .single();
+
+                console.log('Member data:', { memberData, memberError });
+
+                if (memberError) {
+                    console.error('Member query error:', memberError);
+                    throw new Error('Could not load member information: ' + memberError.message);
+                }
+
+                // Display dashboard
+                const html = `
+                    <div class="member-info">
+                        <div class="info-row">
+                            <span class="info-label">Name:</span>
+                            <span class="info-value">${memberData.name || 'N/A'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value">${user.email}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Club ID:</span>
+                            <span class="info-value">${clubId}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Role:</span>
+                            <span class="info-value">${memberData.role || 'N/A'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Status:</span>
+                            <span class="info-value">Verified ✓</span>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('content').innerHTML = html;
+                console.log('Dashboard loaded successfully');
+
+            } catch (error) {
+                console.error('Dashboard error:', error);
+                document.getElementById('content').innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+
+        // ========== Logout Handler ==========
+        async function handleLogout() {
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) {
+                alert('Logout error: ' + error.message);
+            } else {
+                window.location.href = 'home.html';
+            }
+        }
+    </script>
+</body>
+</html>

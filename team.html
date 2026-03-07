@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team - Cyber Sentinels</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000000;
+            color: #00ff41;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.2;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background-color: rgba(0, 0, 0, 0.7);
+            border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: #00ff41;
+            text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #00ff41;
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .nav-menu a:hover {
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.8);
+        }
+
+        .executive-login {
+            background: linear-gradient(135deg, #00ff41, #00cc33);
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .executive-login:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.6);
+        }
+
+        #logoutBtn {
+            background: linear-gradient(135deg, #ff6600, #ff4400);
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        #logoutBtn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 100, 0, 0.6);
+        }
+
+        .team-section {
+            position: relative;
+            z-index: 10;
+            padding: 120px 40px 80px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 60px;
+            text-align: center;
+            color: #00ff41;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            height: 350px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            border: 2px solid #00ff41;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+
+        .flip-card-front {
+            background: rgba(0, 255, 65, 0.05);
+            color: #00ff41;
+        }
+
+        .flip-card-back {
+            background: rgba(0, 255, 65, 0.1);
+            color: #00d9ff;
+            transform: rotateY(180deg);
+            justify-content: space-around;
+        }
+
+        .member-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            color: #00ff41;
+        }
+
+        .member-position {
+            font-size: 18px;
+            color: #00d9ff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+
+        .position-description {
+            font-size: 13px;
+            color: #00ff41;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+
+        .contact-info {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #00ff41;
+            word-break: break-all;
+        }
+
+        .contact-label {
+            font-size: 12px;
+            color: #00d9ff;
+            text-transform: uppercase;
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+
+        .contact-detail {
+            font-size: 13px;
+            color: #00ff41;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .nav-container {
+                padding: 15px 20px;
+            }
+
+            .team-section {
+                padding: 100px 20px 80px;
+            }
+
+            .section-title {
+                font-size: 32px;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .flip-card {
+                height: 300px;
+            }
+        }
+
+        /* ============================================
+           CUSTOM CURSOR
+           ============================================ */
+        * {
+            cursor: none;
+        }
+
+        .cursor-outer {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(0, 255, 65, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease;
+        }
+
+        .cursor-inner {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background-color: rgba(0, 255, 65, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-outer.hover {
+            width: 60px;
+            height: 60px;
+            border-color: rgba(0, 217, 255, 0.5);
+        }
+
+        .cursor-inner.hover {
+            background-color: rgba(0, 217, 255, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor-outer"></div>
+    <div class="cursor-inner"></div>
+
+    <canvas id="matrix-canvas"></canvas>
+
+    <nav>
+        <div class="nav-container">
+            <ul class="nav-menu">
+                <li><a href="home.html">HOME</a></li>
+                <li><a href="home.html#about">ABOUT</a></li>
+                <li><a href="#">EVENTS</a></li>
+                <li><a href="team.html">TEAM</a></li>
+                <li><a href="#">RESOURCES</a></li>
+                <li><a href="#">CONTACT</a></li>
+                <li><a href="dashboard.html" id="dashboardLink" style="display: none;">DASHBOARD</a></li>
+            </ul>
+            <button class="executive-login" id="loginBtn">EXECUTIVE LOGIN</button>
+            <button id="logoutBtn" style="display: none; background: #ff6600; margin-left: 15px;">LOGOUT</button>
+        </div>
+    </nav>
+
+    <section class="team-section">
+        <h1 class="section-title">OUR TEAM</h1>
+        <div class="team-grid">
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="member-position">President</div>
+                        <div class="position-description">Leading organizational vision and strategic direction</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="member-name">Dharani Kumar.M</div>
+                        <div class="contact-info">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-detail">dharani@sentinels.kec</div>
+                            <div class="contact-label">Phone</div>
+                            <div class="contact-detail">+91 9876543210</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="member-position">Vice President</div>
+                        <div class="position-description">Supporting leadership and coordinating initiatives</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="member-name">Deiwick Tarun.I</div>
+                        <div class="contact-info">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-detail">deiwick@sentinels.kec</div>
+                            <div class="contact-label">Phone</div>
+                            <div class="contact-detail">+91 9876543211</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="member-position">Treasurer</div>
+                        <div class="position-description">Managing finances and club resources</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="member-name">Arun.A</div>
+                        <div class="contact-info">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-detail">arun@sentinels.kec</div>
+                            <div class="contact-label">Phone</div>
+                            <div class="contact-detail">+91 9876543212</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="member-position">General Secretary</div>
+                        <div class="position-description">Overseeing administrative operations</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="member-name">Dhanush.A</div>
+                        <div class="contact-info">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-detail">dhanush@sentinels.kec</div>
+                            <div class="contact-label">Phone</div>
+                            <div class="contact-detail">+91 9876543213</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="member-position">Joint Secretary</div>
+                        <div class="position-description">Supporting administrative functions</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="member-name">Raashiya Baanu.S</div>
+                        <div class="contact-info">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-detail">raashiya@sentinels.kec</div>
+                            <div class="contact-label">Phone</div>
+                            <div class="contact-detail">+91 9876543214</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="member-position">PR Head</div>
+                        <div class="position-description">Managing public relations and communications</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="member-name">Sharon Rose.C</div>
+                        <div class="contact-info">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-detail">sharon@sentinels.kec</div>
+                            <div class="contact-label">Phone</div>
+                            <div class="contact-detail">+91 9876543215</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="member-position">Event Coordinator</div>
+                        <div class="position-description">Coordinating and organizing events</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="member-name">Hemavathi.A</div>
+                        <div class="contact-info">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-detail">hemavathi@sentinels.kec</div>
+                            <div class="contact-label">Phone</div>
+                            <div class="contact-detail">+91 9876543216</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="member-position">R&D Head</div>
+                        <div class="position-description">Leading research and development initiatives</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="member-name">Preethi Kumari.R</div>
+                        <div class="contact-info">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-detail">preethi@sentinels.kec</div>
+                            <div class="contact-label">Phone</div>
+                            <div class="contact-detail">+91 9876543217</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="member-position">Event Head</div>
+                        <div class="position-description">Heading all major club events</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="member-name">Pratibha.S</div>
+                        <div class="contact-info">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-detail">pratibha@sentinels.kec</div>
+                            <div class="contact-label">Phone</div>
+                            <div class="contact-detail">+91 9876543218</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="member-position">Executive Director</div>
+                        <div class="position-description">Strategic oversight and direction</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="member-name">Abishek Paulson.S</div>
+                        <div class="contact-info">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-detail">abishek@sentinels.kec</div>
+                            <div class="contact-label">Phone</div>
+                            <div class="contact-detail">+91 9876543219</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <div class="member-position">Technical Head</div>
+                        <div class="position-description">Leading technical initiatives and infrastructure</div>
+                    </div>
+                    <div class="flip-card-back">
+                        <div class="member-name">Rithisha.M</div>
+                        <div class="contact-info">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-detail">rithisha@sentinels.kec</div>
+                            <div class="contact-label">Phone</div>
+                            <div class="contact-detail">+91 9876543220</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        class MatrixRain {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+
+                this.words = ['CYBER', 'SENTINEL', 'SECURITY', 'HACK', 'CODE', 'DEFEND', 'NETWORK', 'PROTOCOL', 'FIREWALL', 'ENCRYPT', 'SHIELD', 'THREAT', 'MONITOR', 'SCAN'];
+                this.columns = Math.floor(this.canvas.width / 20);
+                this.drops = Array(this.columns).fill(0);
+                this.wordIndices = Array(this.columns).fill(0);
+
+                window.addEventListener('resize', () => {
+                    this.canvas.width = window.innerWidth;
+                    this.canvas.height = window.innerHeight;
+                    this.columns = Math.floor(this.canvas.width / 20);
+                });
+
+                this.animate();
+            }
+
+            animate() {
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                this.ctx.fillStyle = '#00ff41';
+                this.ctx.font = '15px JetBrains Mono, monospace';
+
+                for (let i = 0; i < this.columns; i++) {
+                    const wordIndex = this.wordIndices[i] % this.words.length;
+                    const word = this.words[wordIndex];
+                    const charIndex = Math.floor((this.drops[i] * 20) / 100) % word.length;
+                    const text = word.charAt(charIndex);
+                    
+                    this.ctx.fillText(text, i * 20, this.drops[i] * 20);
+
+                    if (this.drops[i] * 20 > this.canvas.height && Math.random() > 0.975) {
+                        this.drops[i] = 0;
+                        this.wordIndices[i]++;
+                    }
+                    this.drops[i]++;
+                }
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        new MatrixRain('matrix-canvas');
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        document.querySelector('.executive-login').addEventListener('click', () => {
+            window.location.href = 'auth.html';
+        });
+
+        /* ============================================
+           CUSTOM CURSOR
+           ============================================ */
+        try {
+            const cursorOuter = document.querySelector('.cursor-outer');
+            const cursorInner = document.querySelector('.cursor-inner');
+            
+            if (!cursorOuter || !cursorInner) {
+                console.error('Cursor elements not found');
+            } else {
+                let mouseX = 0;
+                let mouseY = 0;
+                let outerX = 0;
+                let outerY = 0;
+                
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    cursorInner.style.left = mouseX + 'px';
+                    cursorInner.style.top = mouseY + 'px';
+                });
+                
+                function animateCursor() {
+                    outerX += (mouseX - outerX) * 0.25;
+                    outerY += (mouseY - outerY) * 0.25;
+                    cursorOuter.style.left = outerX + 'px';
+                    cursorOuter.style.top = outerY + 'px';
+                    requestAnimationFrame(animateCursor);
+                }
+                animateCursor();
+                
+                const interactiveElements = document.querySelectorAll('a, button, input, .tab-btn, .flip-card');
+                interactiveElements.forEach(el => {
+                    el.addEventListener('mouseenter', () => {
+                        cursorOuter.classList.add('hover');
+                        cursorInner.classList.add('hover');
+                    });
+                    el.addEventListener('mouseleave', () => {
+                        cursorOuter.classList.remove('hover');
+                        cursorInner.classList.remove('hover');
+                    });
+                });
+                
+                document.addEventListener('mouseleave', () => {
+                    cursorOuter.style.opacity = '0';
+                    cursorInner.style.opacity = '0';
+                });
+                
+                document.addEventListener('mouseenter', () => {
+                    cursorOuter.style.opacity = '1';
+                    cursorInner.style.opacity = '1';
+                });
+            }
+        } catch (error) {
+            console.error('Cursor initialization error:', error);
+        }
+
+        const interactiveElements = document.querySelectorAll('a, button, .flip-card');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorOuter.classList.add('hover');
+                cursorInner.classList.add('hover');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorOuter.classList.remove('hover');
+                cursorInner.classList.remove('hover');
+            });
+        });
+
+        document.addEventListener('mouseleave', () => {
+            cursorOuter.style.opacity = '0';
+            cursorInner.style.opacity = '0';
+        });
+
+        document.addEventListener('mouseenter', () => {
+            cursorOuter.style.opacity = '1';
+            cursorInner.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>

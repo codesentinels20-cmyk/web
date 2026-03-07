@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Executive Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0e27;
+            color: #00ff41;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            background: rgba(10, 14, 39, 0.95);
+            border: 2px solid #00ff41;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-shadow: 0 0 10px #00ff41;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: 2px solid #00ff41;
+            color: #00ff41;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #00ff41;
+            color: #0a0e27;
+            font-weight: bold;
+        }
+
+        .tab-btn:hover {
+            box-shadow: 0 0 10px #00ff41;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            background: #1a1f3a;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 10px #00ff41;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #00ff41;
+            color: #0a0e27;
+            border: none;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            box-shadow: 0 0 20px #00ff41;
+            transform: scale(1.02);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 3px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .success {
+            background: rgba(0, 255, 65, 0.2);
+            color: #00ff41;
+            border: 1px solid #00ff41;
+        }
+
+        .error {
+            background: rgba(255, 0, 100, 0.2);
+            color: #ff0064;
+            border: 1px solid #ff0064;
+        }
+
+        .info {
+            background: rgba(0, 150, 255, 0.2);
+            color: #0096ff;
+            border: 1px solid #0096ff;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        .back-link a {
+            color: #00ff41;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .back-link a:hover {
+            text-shadow: 0 0 10px #00ff41;
+        }
+
+        .loading {
+            display: inline-block;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <div class="container">
+        <h1>> EXECUTIVE_LOGIN</h1>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+            <button class="tab-btn" onclick="switchTab('register')">Register</button>
+        </div>
+
+        <!-- Login Tab -->
+        <div id="login" class="tab-content active">
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" id="loginBtn">Login</button>
+            </form>
+            <div id="loginMessage"></div>
+        </div>
+
+        <!-- Register Tab -->
+        <div id="register" class="tab-content">
+            <div id="registerStep1">
+                <div class="form-group">
+                    <label>Club ID</label>
+                    <input type="text" id="clubId" placeholder="Enter your Club ID" required>
+                </div>
+                <button type="button" onclick="validateClubId()" id="validateBtn">Check Club ID</button>
+                <div id="clubIdMessage"></div>
+            </div>
+
+            <div id="registerStep2" style="display: none;">
+                <form id="registerForm" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label>Club ID (Verified)</label>
+                        <input type="text" id="clubIdDisplay" disabled style="background: #0a2a0a; border-color: #00ff41;">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="registerPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="confirmPassword" required>
+                    </div>
+                    <button type="submit" id="registerBtn">Complete Registration</button>
+                    <button type="button" onclick="resetRegisterForm()" style="margin-top: 10px; background: #ff6600;">Change Club ID</button>
+                </form>
+            </div>
+            <div id="registerMessage"></div>
+        </div>
+
+        <div class="back-link">
+            <a href="home.html">← Back to Home</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ========== Global Variables ==========
+        const SUPABASE_URL = 'https://fleqkgloxgfgpcugmvza.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsZXFrZ2xveGdmZ3BjdWdtdnphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NzAyMTMsImV4cCI6MjA4ODQ0NjIxM30.jBYtHQT1tsGFkYOH29PRl0nZj65G4_m4CARdZ1ajLsQ';
+        
+        let supabaseClient = null;
+
+        // ========== Initialize Supabase ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            const { createClient } = window.supabase;
+            supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+            
+            // Matrix rain effect
+            initMatrixRain();
+            
+            // Check if already logged in
+            checkAuthStatus();
+        });
+
+        // ========== Matrix Rain Effect ==========
+        function initMatrixRain() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const fontSize = 16;
+            const columns = Math.floor(canvas.width / fontSize);
+            const drops = Array(columns).fill(0);
+
+            function drawMatrix() {
+                ctx.fillStyle = 'rgba(10, 14, 39, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#00ff41';
+                ctx.font = fontSize + 'px Courier New';
+                for (let i = 0; i < drops.length; i++) {
+                    const char = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+
+            setInterval(drawMatrix, 50);
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+
+        // ========== Tab Switching ==========
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // ========== Check Auth Status ==========
+        async function checkAuthStatus() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user) {
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        // ========== Login Handler ==========
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const messageDiv = document.getElementById('loginMessage');
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
+
+            try {
+                const { data: { user }, error: signInError } = await supabaseClient.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+                if (signInError) {
+                    throw new Error(signInError.message);
+                }
+
+                if (!user.email_confirmed_at) {
+                    messageDiv.innerHTML = '<div class="message error">Please verify your email first. Check your inbox for the verification link.</div>';
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Login';
+                    return;
+                }
+
+                messageDiv.innerHTML = '<div class="message success">Login successful! Redirecting...</div>';
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+
+            } catch (error) {
+                messageDiv.innerHTML = `<div class="message error">Error: ${error.message}</div>`;
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+            }
+        }
+
+        // ========== Register Handler ==========
+        async function validateClubId() {
+            const clubId = document.getElementById('clubId').value.trim();
+            const validateBtn = document.getElementById('validateBtn');
+            const clubIdMessage = document.getElementById('clubIdMessage');
+
+            if (!clubId) {
+                clubIdMessage.innerHTML = '<div class="message error">Please enter a Club ID</div>';
+                return;
+            }
+
+            validateBtn.disabled = true;
+            validateBtn.textContent = 'Checking...';
+            clubIdMessage.innerHTML = '';
+
+            console.log('Validating Club ID:', clubId);
+
+            try {
+                // Query executive_id table
+                const { data: clubData, error: queryError } = await supabaseClient
+                    .from('executive_id')
+                    .select('*')
+                    .eq('club_id', clubId)
+                    .single();
+
+                console.log('Club validation result:', { clubData, queryError });
+
+                if (queryError) {
+                    if (queryError.code === 'PGRST116' || !clubData) {
+                        clubIdMessage.innerHTML = '<div class="message error">❌ Club ID not found. Please contact your administrator.</div>';
+                        validateBtn.disabled = false;
+                        validateBtn.textContent = 'Check Club ID';
+                        return;
+                    } else {
+                        console.error('Supabase query error:', queryError);
+                        clubIdMessage.innerHTML = `<div class="message error">Database error: ${queryError.message}</div>`;
+                        validateBtn.disabled = false;
+                        validateBtn.textContent = 'Check Club ID';
+                        return;
+                    }
+                }
+
+                if (!clubData) {
+                    clubIdMessage.innerHTML = '<div class="message error">❌ Club ID not found. Please contact your administrator.</div>';
+                    validateBtn.disabled = false;
+                    validateBtn.textContent = 'Check Club ID';
+                    return;
+                }
+
+                if (clubData.used === true) {
+                    clubIdMessage.innerHTML = '<div class="message error">❌ This Club ID has already been registered. Please contact your administrator.</div>';
+                    validateBtn.disabled = false;
+                    validateBtn.textContent = 'Check Club ID';
+                    return;
+                }
+
+                // Club ID is valid! Show step 2
+                clubIdMessage.innerHTML = `<div class="message success">✅ Club ID Valid! (${clubData.name} - ${clubData.role})</div>`;
+                document.getElementById('registerStep1').style.display = 'none';
+                document.getElementById('registerStep2').style.display = 'block';
+                document.getElementById('clubIdDisplay').value = clubId;
+                
+                // Store club data for next step
+                window.validatedClubData = clubData;
+                
+                validateBtn.disabled = false;
+                validateBtn.textContent = 'Check Club ID';
+
+            } catch (error) {
+                console.error('Validation error:', error);
+                clubIdMessage.innerHTML = `<div class="message error">Error: ${error.message}</div>`;
+                validateBtn.disabled = false;
+                validateBtn.textContent = 'Check Club ID';
+            }
+        }
+
+        function resetRegisterForm() {
+            document.getElementById('registerStep1').style.display = 'block';
+            document.getElementById('registerStep2').style.display = 'none';
+            document.getElementById('clubId').value = '';
+            document.getElementById('registerEmail').value = '';
+            document.getElementById('registerPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            document.getElementById('clubIdMessage').innerHTML = '';
+            document.getElementById('registerMessage').innerHTML = '';
+            window.validatedClubData = null;
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const registerBtn = document.getElementById('registerBtn');
+            const messageDiv = document.getElementById('registerMessage');
+            const clubData = window.validatedClubData;
+
+            if (!clubData) {
+                messageDiv.innerHTML = '<div class="message error">Club ID validation required. Please start over.</div>';
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                messageDiv.innerHTML = '<div class="message error">Passwords do not match!</div>';
+                return;
+            }
+
+            if (password.length < 6) {
+                messageDiv.innerHTML = '<div class="message error">Password must be at least 6 characters.</div>';
+                return;
+            }
+
+            registerBtn.disabled = true;
+            registerBtn.textContent = 'Creating Account...';
+
+            console.log('Creating account for Club ID:', clubData.club_id);
+
+            try {
+                // Create auth user with validated club data
+                const { data: authData, error: signUpError } = await supabaseClient.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            club_id: clubData.club_id,
+                            name: clubData.name,
+                            role: clubData.role
+                        }
+                    }
+                });
+
+                console.log('SignUp result:', { authData, signUpError });
+
+                if (signUpError) {
+                    console.error('SignUp error details:', signUpError);
+                    throw new Error(signUpError.message || 'Registration failed');
+                }
+
+                // Update executive_id table to mark as used
+                const { error: updateError } = await supabaseClient
+                    .from('executive_id')
+                    .update({ used: true })
+                    .eq('club_id', clubData.club_id);
+
+                if (updateError) {
+                    console.warn('Warning: Could not update used status:', updateError);
+                }
+
+                messageDiv.innerHTML = '<div class="message success">✅ Registration successful! Check your email for the verification link. Once verified, you can log in.</div>';
+                document.getElementById('registerForm').reset();
+                
+                // Reset form after 3 seconds
+                setTimeout(() => {
+                    resetRegisterForm();
+                }, 3000);
+                
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'Complete Registration';
+
+            } catch (error) {
+                console.error('Registration error:', error);
+                messageDiv.innerHTML = `<div class="message error">Error: ${error.message}</div>`;
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'Complete Registration';
+            }
+        }
+    </script>
+</body>
+</html>

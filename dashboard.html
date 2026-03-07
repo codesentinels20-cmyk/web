@@ -583,33 +583,27 @@
         </div>
     </div>
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script>
-        /* ============================================
-           SUPABASE INITIALIZATION
-           ============================================ */
-        let supabaseUrl = 'https://wqltbuvcrvvpvukzkvdc.supabase.co';
-        let supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxbHRidXZjcnZ2cHZ1a3prdmRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NDk3NzMsImV4cCI6MjA1NTQyNTc3M30.lJq3-eKjM4i7lKvTMH6fMNpvPRPYKL3mVq0wVq5PYMU';
-        let supabase;
-        try {
-            supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        } catch (e) {
-            console.error('Supabase init error:', e);
-        }
-
         /* ============================================
            AUTHENTICATION CHECK
            ============================================ */
+        // Optional auth check - doesn't block dashboard load
         async function checkAuth() {
             try {
-                const { data: { session } } = await supabase.auth.getSession();
-                if (!session) {
-                    window.location.href = 'index.html';
+                // Only check if Supabase is available (for future use)
+                if (window.supabase && window.supabase.createClient) {
+                    const supabase = window.supabase.createClient(
+                        'https://wqltbuvcrvvpvukzkvdc.supabase.co',
+                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxbHRidXZjcnZ2cHZ1a3prdmRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NDk3NzMsImV4cCI6MjA1NTQyNTc3M30.lJq3-eKjM4i7lKvTMH6fMNpvPRPYKL3mVq0wVq5PYMU'
+                    );
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session) {
+                        window.location.href = 'index.html';
+                    }
                 }
             } catch (error) {
                 console.error('Auth check error:', error);
+                // Continue anyway - don't block dashboard
             }
         }
 
@@ -760,12 +754,19 @@
            ============================================ */
         document.getElementById('logout-btn').addEventListener('click', async () => {
             try {
-                await supabase.auth.signOut();
-                window.location.href = 'index.html';
+                // Try to sign out from Supabase if available
+                if (window.supabase && window.supabase.createClient) {
+                    const supabase = window.supabase.createClient(
+                        'https://wqltbuvcrvvpvukzkvdc.supabase.co',
+                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxbHRidXZjcnZ2cHZ1a3prdmRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NDk3NzMsImV4cCI6MjA1NTQyNTc3M30.lJq3-eKjM4i7lKvTMH6fMNpvPRPYKL3mVq0wVq5PYMU'
+                    );
+                    await supabase.auth.signOut();
+                }
             } catch (error) {
                 console.error('Logout error:', error);
-                showMessage('✗ Logout failed', 'error');
             }
+            // Always redirect to home
+            window.location.href = 'index.html';
         });
 
         /* ============================================

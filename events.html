@@ -258,7 +258,7 @@
                 console.log('Loading events from localStorage...');
                 
                 const events = JSON.parse(localStorage.getItem('cybersecurity_events')) || [];
-                console.log('Events found:', events.length);
+                console.log('Events found:', events.length, events);
 
                 const content = document.getElementById('content');
 
@@ -276,6 +276,7 @@
                     return;
                 }
 
+                console.log('Creating event cards for', events.length, 'events');
                 content.innerHTML = events.map(event => createEventCard(event)).join('');
 
             } catch (error) {

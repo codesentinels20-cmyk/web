@@ -510,7 +510,7 @@
                         <input 
                             type="text" 
                             id="event-title" 
-                            placeholder="e.g., Security Audit Completed"
+                            placeholder="e.g., Event"
                             required
                         >
                     </div>
@@ -519,7 +519,7 @@
                         <label for="event-description">Description</label>
                         <textarea 
                             id="event-description" 
-                            placeholder="Provide detailed information about the event..."
+                            placeholder="Provide detail event description..."
                             required
                         ></textarea>
                     </div>
@@ -662,22 +662,29 @@
         }
 
         /**
-         * Load events from Supabase
+         * Load events from localStorage
          */
-        async function loadEvents() {
+        function loadEvents() {
             try {
-                const { data, error } = await supabase
-                    .from('events')
-                    .select('*')
-                    .order('date', { ascending: false });
-
-                if (error) throw error;
-
+                console.log('Loading events...');
+                const events = JSON.parse(localStorage.getItem('cybersecurity_events')) || [];
+                console.log('Events from storage:', events);
                 const feedEl = document.getElementById('events-feed');
                 
-                if (data && data.length > 0) {
-                    feedEl.innerHTML = data.map(event => createEventElement(event)).join('');
-                    updateStats(data);
+                if (events.length > 0) {
+                    feedEl.innerHTML = events.map(event => createEventElement(event)).join('');
+                    updateStats(events);
+                    console.log('Displaying', events.length, 'events');
+                } else {
+                    feedEl.innerHTML = `
+                        <div class="event-item">
+                            <div class="event-header">
+                                <span class="event-title">No Events Yet</span>
+                            </div>
+                            <p class="event-description">Start posting events to see them appear here!</p>
+                        </div>
+                    `;
+                    console.log('No events to display');
                 }
             } catch (error) {
                 console.error('Error loading events:', error);
@@ -685,16 +692,23 @@
         }
 
         /**
-         * Add event to Supabase
+         * Add event to localStorage
          */
-        async function addEvent(eventData) {
+        function addEvent(eventData) {
             try {
-                const { data, error } = await supabase
-                    .from('events')
-                    .insert([eventData])
-                    .select();
+                console.log('Adding event:', eventData);
+                const events = JSON.parse(localStorage.getItem('cybersecurity_events')) || [];
+                console.log('Current events:', events);
+                
+                // Add new event to beginning of array
+                events.unshift({
+                    id: Date.now(),
+                    ...eventData
+                });
 
-                if (error) throw error;
+                // Save to localStorage
+                localStorage.setItem('cybersecurity_events', JSON.stringify(events));
+                console.log('Events saved to localStorage:', events);
 
                 showMessage('✓ Event posted successfully!', 'success');
                 document.getElementById('event-form').reset();
@@ -717,10 +731,13 @@
            ============================================ */
         document.getElementById('event-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            console.log('Form submitted');
 
             const title = document.getElementById('event-title').value.trim();
             const description = document.getElementById('event-description').value.trim();
             const date = document.getElementById('event-date').value;
+
+            console.log('Form values:', { title, description, date });
 
             if (!title || !description || !date) {
                 showMessage('✗ Please fill all fields', 'error');
@@ -734,7 +751,8 @@
                 created_at: new Date().toISOString()
             };
 
-            await addEvent(eventData);
+            console.log('Event data:', eventData);
+            addEvent(eventData);
         });
 
         /* ============================================

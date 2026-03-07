@@ -398,7 +398,7 @@
                 <li><a href="team.html">TEAM</a></li>
                 <li><a href="#">RESOURCES</a></li>
                 <li><a href="#">CONTACT</a></li>
-                <li><a href="dashboard.html" id="dashboardLink" style="display: none;">DASHBOARD</a></li>
+                <li><a href="dashboard.html">DASHBOARD</a></li>
             </ul>
             <button class="executive-login" id="loginBtn">EXECUTIVE LOGIN</button>
             <button id="logoutBtn" style="display: none; background: #ff6600; margin-left: 15px;">LOGOUT</button>
@@ -459,13 +459,11 @@
             // Check if user is logged in
             const { data: { user } } = await supabaseClient.auth.getUser();
             
-            const dashboardLink = document.getElementById('dashboardLink');
             const loginBtn = document.getElementById('loginBtn');
             const logoutBtn = document.getElementById('logoutBtn');
             
             if (user && user.email_confirmed_at) {
                 // User is logged in and verified
-                dashboardLink.style.display = 'block';
                 loginBtn.style.display = 'none';
                 logoutBtn.style.display = 'block';
                 
@@ -476,7 +474,6 @@
                 });
             } else {
                 // User is not logged in
-                dashboardLink.style.display = 'none';
                 loginBtn.style.display = 'block';
                 logoutBtn.style.display = 'none';
             }

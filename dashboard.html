@@ -590,9 +590,14 @@
         /* ============================================
            SUPABASE INITIALIZATION
            ============================================ */
-        const supabaseUrl = 'https://wqltbuvcrvvpvukzkvdc.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxbHRidXZjcnZ2cHZ1a3prdmRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NDk3NzMsImV4cCI6MjA1NTQyNTc3M30.lJq3-eKjM4i7lKvTMH6fMNpvPRPYKL3mVq0wVq5PYMU';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        let supabaseUrl = 'https://wqltbuvcrvvpvukzkvdc.supabase.co';
+        let supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxbHRidXZjcnZ2cHZ1a3prdmRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NDk3NzMsImV4cCI6MjA1NTQyNTc3M30.lJq3-eKjM4i7lKvTMH6fMNpvPRPYKL3mVq0wVq5PYMU';
+        let supabase;
+        try {
+            supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        } catch (e) {
+            console.error('Supabase init error:', e);
+        }
 
         /* ============================================
            AUTHENTICATION CHECK

@@ -227,8 +227,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const supabaseUrl = 'https://wqltbuvcrvvpvukzkvdc.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxbHRidXZjcnZ2cHZ1a3prdmRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NDk3NzMsImV4cCI6MjA1NTQyNTc3M30.lJq3-eKjM4i7lKvTMH6fMNpvPRPYKL3mVq0wVq5PYMU';
+        let supabaseUrl = 'https://wqltbuvcrvvpvukzkvdc.supabase.co';
+        let supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxbHRidXZjcnZ2cHZ1a3prdmRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NDk3NzMsImV4cCI6MjA1NTQyNTc3M30.lJq3-eKjM4i7lKvTMH6fMNpvPRPYKL3mVq0wVq5PYMU';
         let supabase;
 
         try {
@@ -266,8 +266,10 @@
 
         async function loadEvents() {
             try {
+                console.log('Loading events...');
+                
                 if (!supabase) {
-                    throw new Error('Supabase not initialized');
+                    throw new Error('Supabase client not initialized');
                 }
 
                 const { data, error } = await supabase
@@ -275,15 +277,17 @@
                     .select('*')
                     .order('date', { ascending: false });
 
+                console.log('Response:', { data, error });
+
                 const content = document.getElementById('content');
 
                 if (error) {
-                    console.error('Error:', error);
+                    console.error('Database error:', error);
                     content.innerHTML = `
                         <div style="grid-column: 1 / -1;">
                             <div class="empty-state">
                                 <h2>No Events Available</h2>
-                                <p>No events have been posted yet. Check back later!</p>
+                                <p>No events found. Try posting one from the dashboard first!</p>
                                 <a href="home.html" class="back-btn">Back to Home</a>
                             </div>
                         </div>
@@ -292,6 +296,7 @@
                 }
 
                 if (!data || data.length === 0) {
+                    console.log('No events in database');
                     content.innerHTML = `
                         <div style="grid-column: 1 / -1;">
                             <div class="empty-state">
@@ -304,6 +309,7 @@
                     return;
                 }
 
+                console.log('Events found:', data.length);
                 content.innerHTML = data.map(event => createEventCard(event)).join('');
 
             } catch (error) {

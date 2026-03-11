@@ -116,6 +116,114 @@
             box-shadow: 0 0 20px rgba(255, 100, 0, 0.6);
         }
 
+        /* Hamburger Menu */
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 6px;
+            background: none;
+            border: none;
+            padding: 0;
+            z-index: 101;
+        }
+
+        .hamburger-menu span {
+            width: 28px;
+            height: 3px;
+            background-color: #00ff41;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Mobile Menu Dropdown */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 70px;
+            right: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            z-index: 99;
+            animation: slideDown 0.3s ease;
+        }
+
+        .mobile-menu.active {
+            display: flex;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mobile-menu a {
+            color: #00ff41;
+            text-decoration: none;
+            font-size: 16px;
+            letter-spacing: 1px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu a:hover {
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.8);
+            padding-left: 10px;
+        }
+
+        .mobile-menu .mobile-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+            border-top: 1px solid rgba(0, 255, 65, 0.2);
+            padding-top: 15px;
+        }
+
+        .mobile-menu .executive-login,
+        .mobile-menu #logoutBtn {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .mobile-menu .executive-login {
+            background: linear-gradient(135deg, #00ff41, #00cc33);
+            color: #000;
+        }
+
+        .mobile-menu #logoutBtn {
+            background: linear-gradient(135deg, #ff6600, #ff4400);
+            color: #000;
+        }
+
         .team-section {
             position: relative;
             z-index: 10;
@@ -239,6 +347,14 @@
                 display: none;
             }
 
+            .hamburger-menu {
+                display: flex;
+            }
+
+            .mobile-menu {
+                display: none;
+            }
+
             .nav-container {
                 padding: 15px 20px;
             }
@@ -311,6 +427,7 @@
 
     <nav>
         <div class="nav-container">
+            <a href="home.html" class="logo">CYBER SENTINELS</a>
             <ul class="nav-menu">
                 <li><a href="home.html">HOME</a></li>
                 <li><a href="home.html#about">ABOUT</a></li>
@@ -322,8 +439,30 @@
             </ul>
             <button class="executive-login" id="loginBtn">EXECUTIVE LOGIN</button>
             <button id="logoutBtn" style="display: none; background: #ff6600; margin-left: 15px;">LOGOUT</button>
+            
+            <!-- Hamburger Menu -->
+            <button class="hamburger-menu" id="hamburgerBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </nav>
+
+    <!-- Mobile Menu Dropdown -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="home.html">HOME</a>
+        <a href="home.html#about">ABOUT</a>
+        <a href="events.html">EVENTS</a>
+        <a href="team.html">TEAM</a>
+        <a href="dashboard.html" id="mobileDashboardLink" style="display: none;">DASHBOARD</a>
+        <a href="resources.html">RESOURCES</a>
+        <a href="#">CONTACT</a>
+        <div class="mobile-buttons">
+            <button class="executive-login" id="mobileLoginBtn">EXECUTIVE LOGIN</button>
+            <button id="mobileLogoutBtn" style="display: none;">LOGOUT</button>
+        </div>
+    </div>
 
     <section class="team-section">
         <h1 class="section-title">OUR TEAM</h1>
@@ -529,6 +668,59 @@
     </section>
 
     <script>
+        // Hamburger Menu Toggle
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        hamburgerBtn.addEventListener('click', () => {
+            hamburgerBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+        });
+
+        // Close menu when a link is clicked
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburgerBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            });
+        });
+
+        // Auth status handling
+        const dashboardLink = document.getElementById('dashboardLink');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const mobileDashboardLink = document.getElementById('mobileDashboardLink');
+        const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+        const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+
+        // Check if user is logged in (basic check)
+        // Note: If using Supabase, add the Supabase library here
+        const isLoggedIn = localStorage.getItem('userLoggedIn');
+        if (isLoggedIn) {
+            dashboardLink.style.display = 'block';
+            mobileDashboardLink.style.display = 'block';
+            loginBtn.style.display = 'none';
+            mobileLoginBtn.style.display = 'none';
+            logoutBtn.style.display = 'block';
+            mobileLogoutBtn.style.display = 'block';
+
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('userLoggedIn');
+                window.location.href = 'home.html';
+            });
+
+            mobileLogoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('userLoggedIn');
+                window.location.href = 'home.html';
+            });
+        }
+
+        // Mobile login button handler
+        mobileLoginBtn.addEventListener('click', () => {
+            window.location.href = 'auth.html';
+        });
+
         class MatrixRain {
             constructor(canvasId) {
                 this.canvas = document.getElementById(canvasId);

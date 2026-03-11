@@ -61,6 +61,84 @@
             color: #00ff41;
         }
 
+        /* Hamburger Menu */
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 6px;
+            background: none;
+            border: none;
+            padding: 0;
+            z-index: 101;
+        }
+
+        .hamburger-menu span {
+            width: 28px;
+            height: 3px;
+            background-color: #00ff41;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Mobile Menu Dropdown */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 70px;
+            right: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            z-index: 99;
+            animation: slideDown 0.3s ease;
+        }
+
+        .mobile-menu.active {
+            display: flex;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mobile-menu a {
+            color: #00ff41;
+            text-decoration: none;
+            font-size: 16px;
+            letter-spacing: 1px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu a:hover {
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.8);
+            padding-left: 10px;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -201,7 +279,15 @@
             }
 
             .nav-menu {
-                gap: 15px;
+                display: none;
+            }
+
+            .hamburger-menu {
+                display: flex;
+            }
+
+            .mobile-menu {
+                display: none;
             }
         }
     </style>
@@ -215,8 +301,22 @@
                 <li><a href="team.html">Team</a></li>
                 <li><a href="about.html">About</a></li>
             </ul>
+            
+            <!-- Hamburger Menu -->
+            <button class="hamburger-menu" id="hamburgerBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </nav>
+
+    <!-- Mobile Menu Dropdown -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="home.html">Home</a>
+        <a href="team.html">Team</a>
+        <a href="about.html">About</a>
+    </div>
 
     <div class="container">
         <div class="page-header">
@@ -235,6 +335,24 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="credentials.js"></script>
     <script>
+        // Hamburger Menu Toggle
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        hamburgerBtn.addEventListener('click', () => {
+            hamburgerBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+        });
+
+        // Close menu when a link is clicked
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburgerBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            });
+        });
+
         // Helper to get Supabase instance with fallback
         function getSupabase() {
             if (window.supabaseInstance) return window.supabaseInstance;

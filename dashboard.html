@@ -77,6 +77,95 @@
             background-color: #cc3333;
         }
 
+        /* Hamburger Menu */
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 6px;
+            background: none;
+            border: none;
+            padding: 0;
+            z-index: 101;
+        }
+
+        .hamburger-menu span {
+            width: 28px;
+            height: 3px;
+            background-color: #00ff41;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Mobile Menu Dropdown */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 70px;
+            right: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            z-index: 99;
+            animation: slideDown 0.3s ease;
+        }
+
+        .mobile-menu.active {
+            display: flex;
+        }
+
+        .mobile-menu a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-size: 16px;
+            letter-spacing: 1px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu a:hover {
+            color: #00ff41;
+            padding-left: 10px;
+        }
+
+        .mobile-menu .mobile-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+            border-top: 1px solid rgba(0, 255, 65, 0.2);
+            padding-top: 15px;
+        }
+
+        .mobile-menu .logout-btn {
+            width: 100%;
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background-color: #ff4141;
+            color: white;
+        }
+
         /* ============================================
            CONTAINER
            ============================================ */
@@ -703,14 +792,20 @@
             }
 
             .navbar {
-                flex-direction: column;
-                gap: 15px;
+                flex-direction: row;
+                gap: 0;
             }
 
             .navbar-menu {
-                flex-direction: column;
-                gap: 15px;
-                width: 100%;
+                display: none;
+            }
+
+            .hamburger-menu {
+                display: flex;
+            }
+
+            .mobile-menu {
+                display: none;
             }
 
             .navbar-menu a {
@@ -759,7 +854,24 @@
             <a href="about.html" id="about-link">About</a>
             <button class="logout-btn" id="logout-btn">Logout</button>
         </div>
+        
+        <!-- Hamburger Menu -->
+        <button class="hamburger-menu" id="hamburgerBtn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </nav>
+
+    <!-- Mobile Menu Dropdown -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="home.html" id="mobile-home-link">Home</a>
+        <a href="team.html" id="mobile-team-link">Team</a>
+        <a href="about.html" id="mobile-about-link">About</a>
+        <div class="mobile-buttons">
+            <button class="logout-btn" id="mobile-logout-btn">Logout</button>
+        </div>
+    </div>
 
     <!-- Main Container -->
     <div class="container">
@@ -999,6 +1111,26 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="credentials.js"></script>
     <script>
+        // Hamburger Menu Toggle
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        if (hamburgerBtn && mobileMenu) {
+            hamburgerBtn.addEventListener('click', () => {
+                hamburgerBtn.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+            });
+
+            // Close menu when a link is clicked
+            const mobileLinks = mobileMenu.querySelectorAll('a');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburgerBtn.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                });
+            });
+        }
+
         // Helper to get Supabase instance with fallback
         function getSupabase() {
             if (window.supabaseInstance) return window.supabaseInstance;
@@ -1958,6 +2090,21 @@
             // Always redirect to home
             window.location.href = 'index.html';
         });
+
+        // Mobile logout button handler
+        const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+        if (mobileLogoutBtn) {
+            mobileLogoutBtn.addEventListener('click', async () => {
+                try {
+                    // Sign out from Supabase using global client
+                    await supabase.auth.signOut();
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+                // Always redirect to home
+                window.location.href = 'index.html';
+            });
+        }
 
         /* ============================================
            INITIALIZATION

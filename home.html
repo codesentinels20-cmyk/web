@@ -503,6 +503,18 @@
         .cursor-inner.hover {
             background-color: rgba(0, 217, 255, 0.6);
         }
+
+        /* Hide custom cursor on mobile */
+        @media (max-width: 768px) {
+            * {
+                cursor: auto;
+            }
+
+            .cursor-outer,
+            .cursor-inner {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -753,6 +765,8 @@
            CUSTOM CURSOR
            ============================================ */
         try {
+            // Only initialize custom cursor on desktop (768px and above)
+            if (window.innerWidth > 768) {
             const cursorOuter = document.querySelector('.cursor-outer');
             const cursorInner = document.querySelector('.cursor-inner');
             
@@ -802,6 +816,7 @@
                     cursorInner.style.opacity = '1';
                 });
             }
+            } // End of desktop-only check
         } catch (error) {
             console.error('Cursor initialization error:', error);
         }

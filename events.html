@@ -99,6 +99,7 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(0, 255, 65, 0.1);
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .event-card:hover {
@@ -184,6 +185,136 @@
             transform: translateY(-2px);
         }
 
+        /* ============================================
+           MODAL STYLES
+           ============================================ */
+        .event-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .event-modal.open {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .event-modal-content {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+            border: 2px solid #00ff41;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .event-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #00ff41;
+            padding-bottom: 15px;
+        }
+
+        .event-modal-header h2 {
+            color: #00ff41;
+            margin: 0;
+            font-size: 28px;
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .event-modal-close {
+            background: none;
+            border: none;
+            color: #00ff41;
+            font-size: 32px;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s;
+        }
+
+        .event-modal-close:hover {
+            color: #00d9ff;
+        }
+
+        .event-modal-photo {
+            width: 100%;
+            border-radius: 4px;
+            max-height: 400px;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+
+        .event-modal-date {
+            color: #00d9ff;
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .event-modal-description {
+            color: #b0b0b0;
+            font-size: 15px;
+            line-height: 1.8;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+
+        /* ============================================
+           SCROLLBAR STYLING
+           ============================================ */
+        .event-modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .event-modal-content::-webkit-scrollbar-track {
+            background: rgba(0, 255, 65, 0.1);
+            border-radius: 3px;
+        }
+
+        .event-modal-content::-webkit-scrollbar-thumb {
+            background: #00ff41;
+            border-radius: 3px;
+        }
+
+        .event-modal-content::-webkit-scrollbar-thumb:hover {
+            background: #00cc33;
+        }
+
         @media (max-width: 768px) {
             .events-grid {
                 grid-template-columns: 1fr;
@@ -195,6 +326,14 @@
 
             .nav-menu {
                 gap: 15px;
+            }
+
+            .event-modal-content {
+                padding: 20px;
+            }
+
+            .event-modal-header h2 {
+                font-size: 22px;
             }
         }
     </style>
@@ -225,6 +364,25 @@
         </div>
     </div>
 
+    <!-- Event Detail Modal -->
+    <div id="eventModal" class="event-modal">
+        <div class="event-modal-content">
+            <div class="event-modal-header">
+                <h2 id="modalEventTitle">Event Title</h2>
+                <button class="event-modal-close" onclick="closeEventModal()">&times;</button>
+            </div>
+            <img id="modalEventPhoto" class="event-modal-photo" style="display: none;">
+            <div class="event-modal-date" id="modalEventDate">Date</div>
+            <div class="event-modal-description" id="modalEventDescription">Description</div>
+        </div>
+    </div>
+
+    <!-- Supabase Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Supabase Credentials & Client -->
+    <script src="credentials.js"></script>
+
     <script>
         function formatDate(dateString) {
             const options = { 
@@ -237,33 +395,59 @@
             return new Date(dateString).toLocaleDateString('en-US', options);
         }
 
+        let allEvents = [];
+
         function createEventCard(event) {
+            let photoHtml = '';
+            if (event.photo_url) {
+                photoHtml = `<img src="${event.photo_url}" style="width: 100%; border-radius: 4px; max-height: 250px; object-fit: cover; margin-bottom: 15px;">`;
+            }
+            
             return `
-                <div class="event-card">
+                <div class="event-card" onclick="openEventModal(${event.id})" style="cursor: pointer;">
+                    ${photoHtml}
                     <div class="event-title">${escapeHtml(event.title)}</div>
-                    <div class="event-date">${formatDate(event.date)}</div>
+                    <div class="event-date">${formatDate(event.event_date)}</div>
                     <div class="event-description">${escapeHtml(event.description)}</div>
                 </div>
             `;
         }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function loadEvents() {
+        
+        /**
+         * Load events from Supabase
+         */
+        async function loadEvents() {
             try {
-                console.log('Loading events from localStorage...');
+                console.log('Loading events from Supabase...');
                 
-                const events = JSON.parse(localStorage.getItem('cybersecurity_events')) || [];
-                console.log('Events found:', events.length, events);
+                // Use global supabase instance from credentials.js
+                const supabaseClient = window.supabaseInstance || window.getSupabase();
+                
+                if (!supabaseClient) {
+                    console.error('Supabase client not initialized');
+                    throw new Error('Supabase client not available');
+                }
+
+                // Fetch events ordered by event_date ascending
+                const { data: events, error } = await supabaseClient
+                    .from('events')
+                    .select('*')
+                    .order('event_date', { ascending: true });
+
+                if (error) {
+                    console.error('Supabase error:', error);
+                    throw error;
+                }
+
+                console.log('Events found:', events?.length || 0, events);
+                
+                // Store events for modal access
+                allEvents = events || [];
 
                 const content = document.getElementById('content');
 
                 if (!events || events.length === 0) {
-                    console.log('No events in storage');
+                    console.log('No events in Supabase');
                     content.innerHTML = `
                         <div style="grid-column: 1 / -1;">
                             <div class="empty-state">
@@ -292,8 +476,57 @@
                 `;
             }
         }
+        
+        /**
+         * Open event modal with details
+         */
+        function openEventModal(eventId) {
+            const event = allEvents.find(e => e.id === eventId);
+            if (!event) {
+                console.error('Event not found:', eventId);
+                return;
+            }
+            
+            console.log('Opening event modal:', event);
+            document.getElementById('modalEventTitle').textContent = event.title;
+            document.getElementById('modalEventDate').textContent = formatDate(event.event_date);
+            document.getElementById('modalEventDescription').textContent = event.description;
+            
+            const photoImg = document.getElementById('modalEventPhoto');
+            if (event.photo_url) {
+                photoImg.src = event.photo_url;
+                photoImg.style.display = 'block';
+            } else {
+                photoImg.style.display = 'none';
+            }
+            
+            document.getElementById('eventModal').classList.add('open');
+        }
+        
+        /**
+         * Close event modal
+         */
+        function closeEventModal() {
+            console.log('Closing event modal');
+            document.getElementById('eventModal').classList.remove('open');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
         window.addEventListener('load', loadEvents);
+        
+        /**
+         * Close modal when clicking outside of it
+         */
+        document.getElementById('eventModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEventModal();
+            }
+        });
     </script>
 </body>
 </html>

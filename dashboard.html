@@ -371,6 +371,84 @@
         }
 
         /* ============================================
+           RESOURCES SECTION
+           ============================================ */
+        .resources-feed {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .resource-item {
+            background: rgba(0, 217, 255, 0.05);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .resource-item:hover {
+            background: rgba(0, 217, 255, 0.1);
+            border-color: #00d9ff;
+        }
+
+        .resource-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .resource-name {
+            color: #00d9ff;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .resource-type {
+            display: inline-block;
+            background-color: rgba(0, 255, 65, 0.2);
+            color: #00ff41;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .resource-description {
+            color: #b0b0b0;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .resource-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-download {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s;
+            background-color: #00ff41;
+            color: #0a0a0a;
+        }
+
+        .btn-download:hover {
+            background-color: #00cc33;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+        }
+
+        /* ============================================
            MODAL STYLES
            ============================================ */
         .modal {
@@ -703,6 +781,21 @@
                 
                 <form id="event-form">
                     <div class="form-group">
+                        <label for="event-photo">Upload Photo</label>
+                        <input 
+                            type="file" 
+                            id="event-photo" 
+                            accept="image/*"
+                        >
+                        <small style="color: #00d9ff; margin-top: 5px; display: block;">Optional - Max 10MB - JPEG, PNG, GIF</small>
+                    </div>
+
+                    <div id="event-photo-preview" style="display: none; margin-bottom: 15px;">
+                        <img id="event-photo-img" style="width: 100%; border-radius: 4px; max-height: 250px; object-fit: cover;">
+                        <button type="button" onclick="clearEventPhoto()" class="btn btn-cancel" style="width: 100%; margin-top: 8px;">Clear Photo</button>
+                    </div>
+
+                    <div class="form-group">
                         <label for="event-title">Event Title</label>
                         <input 
                             type="text" 
@@ -746,6 +839,59 @@
                         </div>
                         <p class="event-description">Cyber Sentinels Dashboard has been successfully initialized and is ready for event logging.</p>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Resources Section -->
+        <div class="section">
+            <h2 class="section-title">📚 Add Resources</h2>
+            
+            <form id="resource-form">
+                <div class="form-group">
+                    <label for="resource-name">Resource Name</label>
+                    <input 
+                        type="text" 
+                        id="resource-name" 
+                        placeholder="e.g., Security Guide"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="resource-description">Description</label>
+                    <textarea 
+                        id="resource-description" 
+                        placeholder="Provide resource description..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="resource-file">Upload File (Photo, Video, Document, or Text)</label>
+                    <input 
+                        type="file" 
+                        id="resource-file"
+                        accept=".jpg,.jpeg,.png,.gif,.mp4,.pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx"
+                        required
+                    >
+                    <small style="color: #00d9ff; margin-top: 5px; display: block;">Max 50MB - Formats: JPG, PNG, GIF, MP4, PDF, DOC, DOCX, XLSX, PPTX, TXT</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Upload Resource</button>
+            </form>
+        </div>
+
+        <!-- Resources Feed Section -->
+        <div class="section">
+            <h2 class="section-title">📦 Resources Library</h2>
+            
+            <div class="resources-feed" id="resources-feed">
+                <div class="resource-item">
+                    <div class="resource-header">
+                        <span class="resource-name">No Resources Yet</span>
+                    </div>
+                    <p class="resource-description">Upload resources to see them appear here!</p>
                 </div>
             </div>
         </div>
@@ -800,6 +946,15 @@
                     <label for="edit-date">Date & Time</label>
                     <input type="datetime-local" id="edit-date">
                 </div>
+                <div class="form-group">
+                    <label for="edit-photo">Update Photo (Optional)</label>
+                    <input type="file" id="edit-photo" accept="image/*">
+                    <small style="color: #00d9ff; margin-top: 5px; display: block;">Leave empty to keep existing photo - Max 10MB</small>
+                </div>
+                <div id="edit-photo-preview" style="display: none; margin-bottom: 15px;">
+                    <img id="edit-photo-img" style="width: 100%; border-radius: 4px; max-height: 200px; object-fit: cover;">
+                    <button type="button" onclick="clearEditPhoto()" class="btn btn-cancel" style="width: 100%; margin-top: 8px; padding: 8px;">Clear New Photo</button>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
@@ -808,23 +963,59 @@
         </div>
     </div>
 
+    <!-- Edit Resource Modal -->
+    <div id="resource-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Resource</h2>
+                <button class="modal-close" onclick="closeResourceModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="edit-resource-name">Resource Name</label>
+                    <input type="text" id="edit-resource-name" placeholder="Resource name">
+                </div>
+                <div class="form-group">
+                    <label for="edit-resource-description">Description</label>
+                    <textarea id="edit-resource-description" placeholder="Resource description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-resource-type">Resource Type</label>
+                    <select id="edit-resource-type">
+                        <option value="photo">Photo</option>
+                        <option value="video">Video</option>
+                        <option value="document">Document</option>
+                        <option value="text">Text</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeResourceModal()">Cancel</button>
+                <button class="btn-save" onclick="saveEditedResource()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="credentials.js"></script>
     <script>
+        // Helper to get Supabase instance with fallback
+        function getSupabase() {
+            if (window.supabaseInstance) return window.supabaseInstance;
+            if (window.getSupabase) return window.getSupabase();
+            throw new Error('Supabase not initialized');
+        }
+
         /* ============================================
            AUTHENTICATION CHECK
            ============================================ */
         // Optional auth check - doesn't block dashboard load
         async function checkAuth() {
             try {
-                // Only check if Supabase is available (for future use)
-                if (window.supabase && window.supabase.createClient) {
-                    const supabase = window.supabase.createClient(
-                        'https://wqltbuvcrvvpvukzkvdc.supabase.co',
-                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxbHRidXZjcnZ2cHZ1a3prdmRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NDk3NzMsImV4cCI6MjA1NTQyNTc3M30.lJq3-eKjM4i7lKvTMH6fMNpvPRPYKL3mVq0wVq5PYMU'
-                    );
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (!session) {
-                        window.location.href = 'index.html';
-                    }
+                // Use global supabase client to check session
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session) {
+                    window.location.href = 'index.html';
                 }
             } catch (error) {
                 console.error('Auth check error:', error);
@@ -867,34 +1058,63 @@
 
         /**
          * Create event HTML element with edit/delete buttons
+         * Photo appears first, then title and description
          */
         function createEventElement(event) {
+            let photoHtml = '';
+            if (event.photo_url) {
+                photoHtml = `<img src="${event.photo_url}" style="width: 100%; border-radius: 4px; max-height: 250px; object-fit: cover; margin-bottom: 12px;">`;
+            }
+            
+            // Create a safe JSON string for the event object
+            const eventJson = JSON.stringify(event).replace(/\"/g, '&quot;');
+            
             return `
                 <div class="event-item">
+                    ${photoHtml}
                     <div class="event-header">
                         <span class="event-title">${event.title}</span>
-                        <span class="event-date">${formatDate(event.date)}</span>
+                        <span class="event-date">${formatDate(event.event_date)}</span>
                     </div>
                     <p class="event-description">${event.description}</p>
                     <div class="event-actions">
-                        <button class="btn-edit" onclick="openEditModal(${event.id})">✏️ Edit</button>
-                        <button class="btn-delete" onclick="deleteEvent(${event.id})">🗑️ Delete</button>
+                        <button class="btn-edit" onclick="editEvent(${eventJson})">✏️ Edit</button>
+                        <button class="btn-delete" onclick="deleteEvent('${event.id}', '${event.photo_url || ''}')">🗑️ Delete</button>
                     </div>
                 </div>
             `;
         }
 
         /**
-         * Load events from localStorage
+         * Load events from Supabase
          */
-        function loadEvents() {
+        async function loadEvents() {
             try {
-                console.log('Loading events...');
-                const events = JSON.parse(localStorage.getItem('cybersecurity_events')) || [];
-                console.log('Events from storage:', events);
+                console.log('Loading events from Supabase...');
+                
+                // Get Supabase client
+                const supabaseClient = window.supabaseInstance || window.getSupabase();
+                
+                if (!supabaseClient) {
+                    console.error('Supabase client not initialized');
+                    return;
+                }
+
+                // Fetch events from Supabase ordered by event_date (most recent first)
+                const { data: events, error } = await supabaseClient
+                    .from('events')
+                    .select('*')
+                    .order('event_date', { ascending: false });
+
+                if (error) {
+                    console.error('Supabase error:', error);
+                    throw error;
+                }
+
+                console.log('Events from Supabase:', events);
                 const feedEl = document.getElementById('events-feed');
                 
-                if (events.length > 0) {
+                if (events && events.length > 0) {
                     feedEl.innerHTML = events.map(event => createEventElement(event)).join('');
                     updateStats(events);
                     console.log('Displaying', events.length, 'events');
@@ -950,126 +1170,779 @@
         }
 
         /**
-         * Edit modal management
+         * Edit modal management - store event being edited
          */
-        let currentEditingEventId = null;
+        let currentEditingEvent = null;
 
-        function openEditModal(eventId) {
-            console.log('Opening edit modal for event:', eventId);
-            const events = JSON.parse(localStorage.getItem('cybersecurity_events')) || [];
-            const event = events.find(e => e.id === eventId);
+        /**
+         * Open edit modal and populate with event data
+         * Called from edit button with full event object
+         */
+        function editEvent(event) {
+            console.log('Opening edit modal for event:', event);
             
-            if (!event) {
-                console.error('Event not found:', eventId);
+            if (!event || !event.id) {
+                console.error('Invalid event object');
+                showMessage('✗ Unable to edit event', 'error');
                 return;
             }
 
-            currentEditingEventId = eventId;
-            document.getElementById('edit-title').value = event.title;
-            document.getElementById('edit-description').value = event.description;
+            // Store current event being edited
+            currentEditingEvent = event;
+
+            // Populate modal fields with event data
+            document.getElementById('edit-title').value = event.title || '';
+            document.getElementById('edit-description').value = event.description || '';
             
             // Convert ISO date to datetime-local format
-            const dateObj = new Date(event.date);
-            const dateLocal = dateObj.toISOString().slice(0, 16);
-            document.getElementById('edit-date').value = dateLocal;
+            if (event.event_date) {
+                const dateObj = new Date(event.event_date);
+                const dateLocal = dateObj.toISOString().slice(0, 16);
+                document.getElementById('edit-date').value = dateLocal;
+            }
+
+            // Clear photo input and preview
+            clearEditPhoto();
             
+            // Open modal
             document.getElementById('edit-modal').classList.add('open');
+            console.log('✓ Edit modal opened for event:', event.id);
         }
 
         function closeEditModal() {
             console.log('Closing edit modal');
             document.getElementById('edit-modal').classList.remove('open');
-            currentEditingEventId = null;
+            clearEditPhoto();
+            currentEditingEvent = null;
         }
 
-        function saveEditedEvent() {
-            if (!currentEditingEventId) return;
+        /**
+         * Handle edit photo preview
+         */
+        document.getElementById('edit-photo')?.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Validate file size (max 10MB)
+            const maxSize = 10 * 1024 * 1024;
+            if (file.size > maxSize) {
+                showMessage('✗ Photo size too large. Max 10MB allowed.', 'error');
+                this.value = '';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const photoPreviewDiv = document.getElementById('edit-photo-preview');
+                const photoImg = document.getElementById('edit-photo-img');
+                photoImg.src = event.target.result;
+                photoPreviewDiv.style.display = 'block';
+                console.log('✓ New photo preview loaded');
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        /**
+         * Clear edit photo selection
+         */
+        function clearEditPhoto() {
+            const photoInput = document.getElementById('edit-photo');
+            const photoPreviewDiv = document.getElementById('edit-photo-preview');
+            if (photoInput) photoInput.value = '';
+            if (photoPreviewDiv) photoPreviewDiv.style.display = 'none';
+        }
+
+        /**
+         * Save edited event with optional new photo
+         * Handles photo deletion and upload if new photo is selected
+         */
+        async function saveEditedEvent() {
+            if (!currentEditingEvent || !currentEditingEvent.id) {
+                console.error('No event selected for editing');
+                showMessage('✗ No event selected', 'error');
+                return;
+            }
 
             const title = document.getElementById('edit-title').value.trim();
             const description = document.getElementById('edit-description').value.trim();
             const date = document.getElementById('edit-date').value;
+            const photoInput = document.getElementById('edit-photo');
+            const newPhotoFile = photoInput?.files[0];
 
             if (!title || !description || !date) {
-                showMessage('✗ Please fill all fields', 'error');
+                showMessage('✗ Please fill all required fields', 'error');
+                return;
+            }
+
+            // Validate file size if new photo selected
+            if (newPhotoFile && newPhotoFile.size > 10 * 1024 * 1024) {
+                showMessage('✗ Photo size must be less than 10MB', 'error');
                 return;
             }
 
             try {
-                const events = JSON.parse(localStorage.getItem('cybersecurity_events')) || [];
-                const eventIndex = events.findIndex(e => e.id === currentEditingEventId);
+                console.log('=== SAVING EDITED EVENT ===');
+                console.log('Event ID:', currentEditingEvent.id);
+                console.log('New photo selected:', !!newPhotoFile);
                 
-                if (eventIndex === -1) {
-                    showMessage('✗ Event not found', 'error');
+                // Get Supabase client
+                const supabaseClient = window.supabaseInstance || window.getSupabase();
+                
+                if (!supabaseClient) {
+                    console.error('Supabase client not initialized');
+                    showMessage('✗ Connection error. Please refresh the page.', 'error');
                     return;
                 }
 
-                // Update event
-                events[eventIndex] = {
-                    ...events[eventIndex],
+                // Update object for the database
+                const updateData = {
                     title,
                     description,
-                    date: new Date(date).toISOString(),
-                    updated_at: new Date().toISOString()
+                    event_date: new Date(date).toISOString()
                 };
 
-                localStorage.setItem('cybersecurity_events', JSON.stringify(events));
+                let newPhotoUrl = currentEditingEvent.photo_url; // Keep existing by default
+
+                // Handle photo update if new photo is selected
+                if (newPhotoFile) {
+                    try {
+                        console.log('New photo selected - handling photo replacement...');
+                        
+                        // Step 1: Delete old photo if it exists
+                        if (currentEditingEvent.photo_url) {
+                            try {
+                                console.log('Deleting old photo from storage...');
+                                const oldPhotoFileName = extractFileNameFromUrl(currentEditingEvent.photo_url);
+                                
+                                if (oldPhotoFileName) {
+                                    const { error: deleteError } = await supabaseClient
+                                        .storage
+                                        .from('event-images')
+                                        .remove([oldPhotoFileName]);
+
+                                    if (deleteError) {
+                                        console.warn('Warning: Could not delete old photo:', deleteError);
+                                        // Continue anyway
+                                    } else {
+                                        console.log('✓ Old photo deleted:', oldPhotoFileName);
+                                    }
+                                }
+                            } catch (deleteErr) {
+                                console.warn('Warning: Error deleting old photo:', deleteErr);
+                                // Continue anyway
+                            }
+                        }
+
+                        // Step 2: Upload new photo
+                        console.log('Uploading new photo to Supabase storage...');
+                        const uniqueFileName = `${crypto.randomUUID()}-${newPhotoFile.name}`;
+
+                        const { data: uploadData, error: uploadError } = await supabaseClient
+                            .storage
+                            .from('event-images')
+                            .upload(uniqueFileName, newPhotoFile);
+
+                        if (uploadError) {
+                            console.error('Upload error:', uploadError);
+                            throw new Error(`Failed to upload new photo: ${uploadError.message}`);
+                        }
+
+                        console.log('✓ New photo uploaded:', uploadData);
+
+                        // Step 3: Get public URL for new photo
+                        const { data: publicUrlData } = supabaseClient
+                            .storage
+                            .from('event-images')
+                            .getPublicUrl(uniqueFileName);
+
+                        newPhotoUrl = publicUrlData.publicUrl;
+                        console.log('✓ New photo URL generated:', newPhotoUrl);
+                        updateData.photo_url = newPhotoUrl;
+
+                    } catch (photoErr) {
+                        console.error('Photo update error:', photoErr);
+                        showMessage(`✗ ${photoErr.message}`, 'error');
+                        return;
+                    }
+                }
+
+                // Step 4: Update event in database
+                console.log('Updating event record in database...', updateData);
+                const { error: updateError } = await supabaseClient
+                    .from('events')
+                    .update(updateData)
+                    .eq('id', currentEditingEvent.id);
+
+                if (updateError) {
+                    console.error('Update error:', updateError);
+                    throw new Error(`Failed to update event: ${updateError.message}`);
+                }
+
+                console.log('✓ Event updated successfully');
                 showMessage('✓ Event updated successfully!', 'success');
                 closeEditModal();
                 loadEvents();
-                console.log('Event saved:', events[eventIndex]);
+
             } catch (error) {
                 console.error('Error saving event:', error);
-                showMessage('✗ Failed to save event', 'error');
+                showMessage(`✗ ${error.message || 'Failed to save event'}`, 'error');
             }
         }
 
-        function deleteEvent(eventId) {
+        /**
+         * Delete event with confirmation
+         * Deletes photo from storage and event record from database
+         * @param {string} id - Event ID
+         * @param {string} photoUrl - Event photo URL (can be empty)
+         */
+        async function deleteEvent(id, photoUrl) {
             if (!confirm('Are you sure you want to delete this event?')) {
+                console.log('Delete cancelled by user');
                 return;
             }
 
             try {
-                console.log('Deleting event:', eventId);
-                let events = JSON.parse(localStorage.getItem('cybersecurity_events')) || [];
-                events = events.filter(e => e.id !== eventId);
+                console.log('=== DELETING EVENT ===');
+                console.log('Event ID:', id);
+                console.log('Photo URL:', photoUrl || 'None');
                 
-                localStorage.setItem('cybersecurity_events', JSON.stringify(events));
+                // Get Supabase client
+                const supabaseClient = window.supabaseInstance || window.getSupabase();
+                
+                if (!supabaseClient) {
+                    console.error('Supabase client not initialized');
+                    showMessage('✗ Connection error. Please refresh the page.', 'error');
+                    return;
+                }
+
+                // Step 1: Delete photo from storage if it exists
+                if (photoUrl) {
+                    try {
+                        console.log('Deleting photo from Supabase storage...');
+                        const fileName = extractFileNameFromUrl(photoUrl);
+                        
+                        if (fileName) {
+                            console.log('Extracted file name:', fileName);
+                            const { error: storageError } = await supabaseClient
+                                .storage
+                                .from('event-images')
+                                .remove([fileName]);
+
+                            if (storageError) {
+                                console.warn('Warning: Could not delete photo from storage:', storageError);
+                                // Continue with event deletion anyway
+                            } else {
+                                console.log('✓ Photo deleted from storage:', fileName);
+                            }
+                        }
+                    } catch (storageErr) {
+                        console.warn('Warning: Error deleting photo:', storageErr);
+                        // Continue with event deletion anyway
+                    }
+                }
+
+                // Step 2: Delete event record from database
+                console.log('Deleting event record from database...');
+                const { error: deleteError } = await supabaseClient
+                    .from('events')
+                    .delete()
+                    .eq('id', id);
+
+                if (deleteError) {
+                    console.error('Delete error:', deleteError);
+                    throw new Error(`Failed to delete event: ${deleteError.message}`);
+                }
+
+                console.log('✓ Event deleted successfully from database');
                 showMessage('✓ Event deleted successfully!', 'success');
                 loadEvents();
-                console.log('Event deleted. Remaining events:', events.length);
+
             } catch (error) {
                 console.error('Error deleting event:', error);
-                showMessage('✗ Failed to delete event', 'error');
+                showMessage(`✗ ${error.message || 'Failed to delete event'}`, 'error');
             }
+        }
+
+        /**
+         * Extract file name from Supabase storage URL
+         * Handles URLs like: https://...storage.../object/public/bucket/filename
+         * @param {string} url - Full Supabase storage URL
+         * @returns {string} - Extracted file name
+         */
+        function extractFileNameFromUrl(url) {
+            if (!url) return null;
+            try {
+                const urlParts = url.split('/');
+                const fileName = urlParts[urlParts.length - 1];
+                return fileName || null;
+            } catch (err) {
+                console.error('Error extracting file name from URL:', err);
+                return null;
+            }
+        }
+
+        /* ============================================
+           RESOURCE MANAGEMENT
+           ============================================ */
+        let currentEditingResourceId = null;
+
+        /**
+         * Attach download handlers to dashboard resource buttons
+         */
+        function attachDownloadHandlersDashboard() {
+            const downloadButtons = document.querySelectorAll('.btn-download[data-url]');
+            downloadButtons.forEach(button => {
+                button.removeEventListener('click', handleDashboardDownload);
+                button.addEventListener('click', handleDashboardDownload);
+            });
+        }
+
+        /**
+         * Handle download click event
+         */
+        async function handleDashboardDownload(e) {
+            e.preventDefault();
+            const url = this.getAttribute('data-url');
+            const name = this.getAttribute('data-name');
+            await downloadResource(url, name);
+        }
+
+        /**
+         * Download file from Supabase storage
+         * Fetches as blob and triggers browser download
+         * @param {string} fileUrl - Full Supabase file URL
+         * @param {string} fileName - Name to save file as
+         */
+        async function downloadResource(fileUrl, fileName) {
+            try {
+                console.log('=== DOWNLOADING RESOURCE ===');
+                console.log('File URL:', fileUrl);
+                console.log('File Name:', fileName);
+
+                // Fetch the file as a blob
+                const response = await fetch(fileUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch file: ${response.statusText}`);
+                }
+
+                const blob = await response.blob();
+                console.log('✓ File fetched successfully, size:', blob.size, 'bytes');
+
+                // Create a temporary blob URL
+                const blobUrl = URL.createObjectURL(blob);
+                console.log('✓ Blob URL created');
+
+                // Create a temporary anchor element and trigger download
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Clean up the blob URL after a short delay
+                setTimeout(() => {
+                    URL.revokeObjectURL(blobUrl);
+                    console.log('✓ Blob URL cleaned up');
+                }, 100);
+
+                console.log('✓ Download triggered successfully');
+
+            } catch (error) {
+                console.error('❌ Error downloading resource:', error);
+                showMessage(`✗ Failed to download resource: ${error.message}`, 'error');
+            }
+        }
+
+        /**
+         * Create resource HTML element with actions
+         */
+        /**
+         * Load resources from Supabase
+         */
+        async function loadResources() {
+            try {
+                console.log('=== LOADING RESOURCES FROM SUPABASE ===');
+                const sbInstance = getSupabase();
+                
+                const feedEl = document.getElementById('resources-feed');
+                if (!feedEl) {
+                    console.error('Resources feed element not found!');
+                    return;
+                }
+
+                feedEl.innerHTML = '<p style="text-align: center; color: #00d9ff;">Loading resources...</p>';
+
+                // Fetch from Supabase
+                const { data: resources, error } = await sbInstance
+                    .from('resources')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    throw new Error(error.message);
+                }
+
+                console.log('✓ Resources fetched from Supabase:', resources);
+                console.log('Total resources:', resources?.length || 0);
+
+                if (!resources || resources.length === 0) {
+                    feedEl.innerHTML = '<p style="text-align: center; color: #00d9ff; padding: 20px;">No resources uploaded yet</p>';
+                    return;
+                }
+
+                feedEl.innerHTML = resources.map((resource) => `
+                    <div class="resource-item">
+                        <div class="resource-header">
+                            <span class="resource-name">${escapeHtml(resource.name)}</span>
+                        </div>
+                        <p class="resource-description">${escapeHtml(resource.description)}</p>
+                        <div class="resource-actions">
+                            <button class="btn-download" data-url="${resource.file_url}" data-name="${escapeHtml(resource.name)}">⬇️ Download</button>
+                            <button class="btn-delete" onclick="deleteResource('${resource.id}', '${resource.file_url}')">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Attach download handlers
+                attachDownloadHandlersDashboard();
+
+            } catch (error) {
+                console.error('❌ Error loading resources:', error);
+                const feedEl = document.getElementById('resources-feed');
+                if (feedEl) {
+                    feedEl.innerHTML = '<p style="color: #ff4141; text-align: center; padding: 20px;">Error loading resources</p>';
+                }
+            }
+        }
+
+        /**
+         * Delete resource from Supabase Storage and database
+         */
+        async function deleteResource(resourceId, fileUrl) {
+            if (!confirm('Are you sure you want to delete this resource?')) {
+                console.log('Delete cancelled by user');
+                return;
+            }
+
+            try {
+                console.log('=== DELETING RESOURCE ===');
+                console.log('Resource ID:', resourceId);
+                console.log('File URL:', fileUrl);
+
+                const sbInstance = window.supabaseInstance || window.getSupabase();
+                
+                if (!sbInstance) {
+                    throw new Error('Supabase client not initialized');
+                }
+
+                // Extract file name from file_url
+                // file_url format: https://...storage.../object/public/resources/[filename]
+                const urlParts = fileUrl.split('/');
+                const fileName = urlParts[urlParts.length - 1];
+                console.log('Extracted file name:', fileName);
+
+                // Step 1: Delete file from Supabase storage bucket 'resources'
+                if (fileName) {
+                    console.log('Deleting file from storage:', fileName);
+                    const { error: storageError } = await sbInstance
+                        .storage
+                        .from('resources')
+                        .remove([fileName]);
+
+                    if (storageError) {
+                        console.error('❌ Storage deletion error:', storageError);
+                        // Continue with database deletion even if storage deletion fails
+                        // (file might already be deleted)
+                    } else {
+                        console.log('✓ File deleted from storage:', fileName);
+                    }
+                }
+
+                // Step 2: Delete record from database
+                console.log('Deleting resource record from database...');
+                const { error: deleteError } = await sbInstance
+                    .from('resources')
+                    .delete()
+                    .eq('id', resourceId);
+
+                if (deleteError) {
+                    console.error('❌ Database deletion error:', deleteError);
+                    throw new Error(`Failed to delete resource: ${deleteError.message}`);
+                }
+
+                console.log('✓ Resource record deleted from database:', resourceId);
+                showMessage('✓ Resource deleted successfully!', 'success');
+                
+                // Refresh the resources list
+                loadResources();
+
+            } catch (error) {
+                console.error('❌ Error deleting resource:', error);
+                showMessage(`✗ Failed to delete resource: ${error.message}`, 'error');
+            }
+        }
+
+        /**
+         * Escape HTML to prevent XSS
+         */
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         /* ============================================
            FORM SUBMISSION
            ============================================ */
+        /**
+         * Handle event photo preview
+         */
+        document.getElementById('event-photo')?.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Validate file size (max 10MB)
+            const maxSize = 10 * 1024 * 1024;
+            if (file.size > maxSize) {
+                showMessage('✗ Photo size too large. Max 10MB allowed.', 'error');
+                this.value = '';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const photoPreviewDiv = document.getElementById('event-photo-preview');
+                const photoImg = document.getElementById('event-photo-img');
+                photoImg.src = event.target.result;
+                photoPreviewDiv.style.display = 'block';
+                console.log('✓ Photo preview loaded');
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        /**
+         * Clear event photo
+         */
+        function clearEventPhoto() {
+            document.getElementById('event-photo').value = '';
+            document.getElementById('event-photo-preview').style.display = 'none';
+            document.getElementById('event-photo-img').src = '';
+        }
+
+        /**
+         * Post Event to Supabase
+         */
+        async function postEvent() {
+            try {
+                console.log('=== POSTING EVENT TO SUPABASE ===');
+
+                const title = document.getElementById('event-title').value.trim();
+                const description = document.getElementById('event-description').value.trim();
+                const date = document.getElementById('event-date').value;
+                const photoInput = document.getElementById('event-photo');
+                const photoFile = photoInput?.files[0];
+
+                console.log('Form values:', { title, description, date, hasPhoto: !!photoFile });
+
+                if (!title || !description || !date) {
+                    showMessage('✗ Please fill all required fields', 'error');
+                    return;
+                }
+
+                // Validate file size (max 10MB)
+                if (photoFile && photoFile.size > 10 * 1024 * 1024) {
+                    showMessage('✗ Photo size must be less than 10MB', 'error');
+                    return;
+                }
+
+                // Get Supabase client
+                const supabaseClient = window.supabaseInstance || window.getSupabase();
+                
+                if (!supabaseClient) {
+                    console.error('Supabase client not initialized');
+                    showMessage('✗ Connection error. Please refresh the page.', 'error');
+                    return;
+                }
+
+                let photoUrl = null;
+
+                // Upload photo to Supabase storage if provided
+                if (photoFile) {
+                    try {
+                        console.log('Uploading photo to Supabase storage...');
+                        
+                        // Generate unique filename
+                        const uniqueFileName = `${crypto.randomUUID()}-${photoFile.name}`;
+                        console.log('Generated filename:', uniqueFileName);
+
+                        // Upload file to storage bucket
+                        const { data: uploadData, error: uploadError } = await supabaseClient
+                            .storage
+                            .from('event-images')
+                            .upload(uniqueFileName, photoFile);
+
+                        if (uploadError) {
+                            console.error('Upload error:', uploadError);
+                            throw new Error(`Failed to upload photo: ${uploadError.message}`);
+                        }
+
+                        console.log('File uploaded:', uploadData);
+
+                        // Get public URL
+                        const { data: publicUrlData } = supabaseClient
+                            .storage
+                            .from('event-images')
+                            .getPublicUrl(uniqueFileName);
+
+                        photoUrl = publicUrlData.publicUrl;
+                        console.log('Public URL:', photoUrl);
+
+                    } catch (uploadErr) {
+                        console.error('Photo upload failed:', uploadErr);
+                        showMessage(`✗ ${uploadErr.message}`, 'error');
+                        return;
+                    }
+                }
+
+                // Insert event into database
+                console.log('Inserting event into Supabase database...');
+                const { data: insertedEvent, error: insertError } = await supabaseClient
+                    .from('events')
+                    .insert([
+                        {
+                            title,
+                            description,
+                            event_date: new Date(date).toISOString(),
+                            photo_url: photoUrl
+                        }
+                    ])
+                    .select();
+
+                if (insertError) {
+                    console.error('Insert error:', insertError);
+                    throw new Error(`Failed to create event: ${insertError.message}`);
+                }
+
+                console.log('✓ Event created successfully:', insertedEvent);
+                showMessage('✓ Event posted successfully!', 'success');
+
+                // Reset form
+                document.getElementById('event-form').reset();
+                clearEventPhoto();
+
+                // Refresh events feed
+                loadEvents();
+
+            } catch (error) {
+                console.error('Error posting event:', error);
+                showMessage(`✗ ${error.message || 'Failed to post event. Please try again.'}`, 'error');
+            }
+        }
+
         document.getElementById('event-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            console.log('Form submitted');
+            await postEvent();
+        });
 
-            const title = document.getElementById('event-title').value.trim();
-            const description = document.getElementById('event-description').value.trim();
-            const date = document.getElementById('event-date').value;
+        /* ============================================
+           RESOURCE FORM SUBMISSION - SUPABASE INTEGRATION
+           ============================================ */
+        document.getElementById('resource-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            console.log('=== RESOURCE FORM SUBMITTED ===');
 
-            console.log('Form values:', { title, description, date });
+            const name = document.getElementById('resource-name').value.trim();
+            const description = document.getElementById('resource-description').value.trim();
+            const fileInput = document.getElementById('resource-file');
+            const file = fileInput.files[0];
 
-            if (!title || !description || !date) {
-                showMessage('✗ Please fill all fields', 'error');
+            console.log('Form data:', { name, description, fileName: file?.name });
+
+            if (!name || !file) {
+                showMessage('✗ Please fill in all fields and select a file', 'error');
+                console.error('Form validation failed: name or file missing');
                 return;
             }
 
-            const eventData = {
-                title,
-                description,
-                date: new Date(date).toISOString(),
-                created_at: new Date().toISOString()
-            };
+            // Validate file size (max 50MB)
+            const maxSize = 50 * 1024 * 1024;
+            if (file.size > maxSize) {
+                showMessage('✗ File size exceeds 50MB limit', 'error');
+                console.error('File size exceeds limit:', file.size);
+                return;
+            }
 
-            console.log('Event data:', eventData);
-            addEvent(eventData);
+            try {
+                console.log('Starting file upload to Supabase...');
+                console.log('File details:', { name: file.name, size: file.size, type: file.type });
+                const sbInstance = getSupabase();
+                
+                showMessage('⏳ Uploading file to Supabase Storage...', 'success');
+
+                // Generate unique filename using crypto.randomUUID()
+                const fileExtension = file.name.split('.').pop();
+                const uniqueFileName = `${crypto.randomUUID()}.${fileExtension}`;
+                const filePath = `${uniqueFileName}`;
+
+                console.log('Generated unique filename:', uniqueFileName);
+                console.log('Upload path:', filePath);
+
+                // Upload file to Supabase Storage
+                const { data: uploadData, error: uploadError } = await sbInstance.storage
+                    .from('resources')
+                    .upload(filePath, file, {
+                        cacheControl: '3600',
+                        upsert: false
+                    });
+
+                if (uploadError) {
+                    throw new Error(`Storage upload failed: ${uploadError.message}`);
+                }
+
+                console.log('✓ File uploaded to Supabase Storage:', uploadData);
+
+                // Get public URL for the uploaded file
+                const { data: publicUrlData } = sbInstance.storage
+                    .from('resources')
+                    .getPublicUrl(filePath);
+
+                const fileUrl = publicUrlData?.publicUrl;
+                console.log('✓ Public URL generated:', fileUrl);
+
+                if (!fileUrl) {
+                    throw new Error('Failed to generate public URL');
+                }
+
+                // Insert resource metadata into database
+                const { data: insertData, error: insertError } = await sbInstance
+                    .from('resources')
+                    .insert([
+                        {
+                            name: name,
+                            description: description,
+                            file_url: fileUrl,
+                            created_at: new Date().toISOString()
+                        }
+                    ])
+                    .select();
+
+                if (insertError) {
+                    throw new Error(`Database insert failed: ${insertError.message}`);
+                }
+
+                console.log('✓ Resource metadata saved to database:', insertData);
+                showMessage('✓ Resource uploaded successfully!', 'success');
+                document.getElementById('resource-form').reset();
+                fileInput.value = '';
+                loadResources();
+
+            } catch (error) {
+                console.error('❌ Error uploading resource:', error);
+                console.error('Error message:', error.message);
+                showMessage(`✗ Upload failed: ${error.message}`, 'error');
+            }
         });
 
         /* ============================================
@@ -1077,14 +1950,8 @@
            ============================================ */
         document.getElementById('logout-btn').addEventListener('click', async () => {
             try {
-                // Try to sign out from Supabase if available
-                if (window.supabase && window.supabase.createClient) {
-                    const supabase = window.supabase.createClient(
-                        'https://wqltbuvcrvvpvukzkvdc.supabase.co',
-                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxbHRidXZjcnZ2cHZ1a3prdmRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NDk3NzMsImV4cCI6MjA1NTQyNTc3M30.lJq3-eKjM4i7lKvTMH6fMNpvPRPYKL3mVq0wVq5PYMU'
-                    );
-                    await supabase.auth.signOut();
-                }
+                // Sign out from Supabase using global client
+                await supabase.auth.signOut();
             } catch (error) {
                 console.error('Logout error:', error);
             }
@@ -1097,6 +1964,7 @@
            ============================================ */
         window.addEventListener('load', () => {
             loadEvents();
+            loadResources();
         });
 
         /* ============================================
@@ -1105,6 +1973,12 @@
         document.getElementById('edit-modal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeEditModal();
+            }
+        });
+
+        document.getElementById('resource-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeResourceModal();
             }
         });
     </script>

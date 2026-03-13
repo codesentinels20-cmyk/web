@@ -269,6 +269,59 @@
             text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
         }
 
+        .mobile-auth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0, 255, 65, 0.2);
+        }
+
+        .mobile-btn {
+            padding: 10px 12px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .mobile-btn-login {
+            border: 2px solid #00ff41;
+            color: #00ff41;
+        }
+
+        .mobile-btn-login:hover {
+            background: #00ff41;
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.6);
+        }
+
+        .mobile-btn-join {
+            background: linear-gradient(135deg, #00ff41, #00cc33);
+            color: #000;
+            border: none;
+        }
+
+        .mobile-btn-join:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.6);
+        }
+
+        .mobile-btn-logout {
+            border: 2px solid #ff4455;
+            color: #ff4455;
+        }
+
+        .mobile-btn-logout:hover {
+            background: #ff4455;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 68, 85, 0.6);
+        }
+
         .hero {
             max-width: 1400px;
             margin: 0 auto;
@@ -991,7 +1044,11 @@
         <a href="resources.html">Resources</a>
         <a href="member-dashboard.html" id="mobileMemberDashboardBtn" style="display: none; color: #00d9ff;">👤 Member Dashboard</a>
         <a href="dashboard.html" id="mobileExecutiveDashboardBtn" style="display: none; color: #00d9ff;">📊 Executive Dashboard</a>
-        <a href="#" id="mobileLogoutBtn" style="display: none; color: #ff4455;" onclick="handleLogoutClick(); return false;">Log out</a>
+        <div class="mobile-auth-buttons">
+            <a href="login.html" id="mobileLoginBtn" class="mobile-btn mobile-btn-login">Log in</a>
+            <a href="register.html" id="mobileJoinBtn" class="mobile-btn mobile-btn-join">Join Club</a>
+            <a href="#" id="mobileLogoutBtn2" class="mobile-btn mobile-btn-logout" style="display: none;" onclick="handleLogoutClick(); return false;">Log out</a>
+        </div>
     </div>
 
     <!-- Hero Section -->
@@ -1211,7 +1268,9 @@
             const userType = localStorage.getItem('userType');
             const mobileMemberDashboardBtn = document.getElementById('mobileMemberDashboardBtn');
             const mobileExecutiveDashboardBtn = document.getElementById('mobileExecutiveDashboardBtn');
-            const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+            const mobileLogoutBtn = document.getElementById('mobileLogoutBtn2');
+            const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+            const mobileJoinBtn = document.getElementById('mobileJoinBtn');
             
             if (userType === 'executive') {
                 console.log('[Auth] Quick check: Executive user');
@@ -1223,6 +1282,8 @@
                 if (joinBtn) joinBtn.style.display = 'none';
                 if (logoutBtn) logoutBtn.style.display = 'block';
                 if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
+                if (mobileLoginBtn) mobileLoginBtn.style.display = 'none';
+                if (mobileJoinBtn) mobileJoinBtn.style.display = 'none';
             } else if (userType === 'member') {
                 console.log('[Auth] Quick check: Member user');
                 if (memberDashboardBtn) memberDashboardBtn.style.display = 'block';
@@ -1233,6 +1294,13 @@
                 if (joinBtn) joinBtn.style.display = 'none';
                 if (logoutBtn) logoutBtn.style.display = 'block';
                 if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
+                if (mobileLoginBtn) mobileLoginBtn.style.display = 'none';
+                if (mobileJoinBtn) mobileJoinBtn.style.display = 'none';
+            } else {
+                console.log('[Auth] Quick check: Not logged in');
+                if (mobileLoginBtn) mobileLoginBtn.style.display = 'block';
+                if (mobileJoinBtn) mobileJoinBtn.style.display = 'block';
+                if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
             }
         }
 
@@ -1255,6 +1323,12 @@
                 if (logoutBtn) logoutBtn.style.display = 'none';
                 if (loginBtn) loginBtn.style.display = 'block';
                 if (joinBtn) joinBtn.style.display = 'block';
+                const mobileLogoutBtn2 = document.getElementById('mobileLogoutBtn2');
+                const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+                const mobileJoinBtn = document.getElementById('mobileJoinBtn');
+                if (mobileLogoutBtn2) mobileLogoutBtn2.style.display = 'none';
+                if (mobileLoginBtn) mobileLoginBtn.style.display = 'block';
+                if (mobileJoinBtn) mobileJoinBtn.style.display = 'block';
                 window.location.href = 'home.html';
             }
         };
@@ -1264,13 +1338,29 @@
             console.log('[Buttons] Initializing mobile buttons');
             const mobileMemberDashboardBtn = document.getElementById('mobileMemberDashboardBtn');
             const mobileExecutiveDashboardBtn = document.getElementById('mobileExecutiveDashboardBtn');
-            const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+            const mobileLogoutBtn = document.getElementById('mobileLogoutBtn2');
+            const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+            const mobileJoinBtn = document.getElementById('mobileJoinBtn');
 
             if (mobileLogoutBtn) {
                 mobileLogoutBtn.onclick = async (e) => {
                     e.preventDefault();
                     console.log('[Buttons] Mobile Logout clicked');
                     await window.handleLogoutClick();
+                };
+            }
+            
+            if (mobileLoginBtn) {
+                mobileLoginBtn.onclick = () => {
+                    console.log('[Buttons] Mobile Login clicked');
+                    window.location.href = 'login.html';
+                };
+            }
+            
+            if (mobileJoinBtn) {
+                mobileJoinBtn.onclick = () => {
+                    console.log('[Buttons] Mobile Join clicked');
+                    window.location.href = 'register.html';
                 };
             }
         }

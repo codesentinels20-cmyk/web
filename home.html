@@ -988,56 +988,70 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="credentials.js"></script>
     <script>
+        console.log('[App] Script loaded, DOM state:', document.readyState);
+
         // Wait for DOM to be fully ready
         function initializeMenus() {
-            console.log('[Menu] Initializing hamburger menu');
-            
-            // Hamburger Menu Toggle
-            const hamburgerBtn = document.getElementById('hamburgerBtn');
-            const mobileMenu = document.getElementById('mobileMenu');
+            try {
+                console.log('[Menu] Initializing hamburger menu');
+                
+                // Hamburger Menu Toggle
+                const hamburgerBtn = document.getElementById('hamburgerBtn');
+                const mobileMenu = document.getElementById('mobileMenu');
 
-            if (!hamburgerBtn || !mobileMenu) {
-                console.error('[Menu] Missing hamburger elements');
-                return;
-            }
+                if (!hamburgerBtn || !mobileMenu) {
+                    console.error('[Menu] Missing hamburger elements - hamburgerBtn:', !!hamburgerBtn, 'mobileMenu:', !!mobileMenu);
+                    return;
+                }
 
-            // Toggle menu on hamburger click
-            hamburgerBtn.onclick = function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('[Menu] Hamburger clicked');
-                hamburgerBtn.classList.toggle('active');
-                mobileMenu.classList.toggle('active');
-            };
+                console.log('[Menu] Found hamburger elements, attaching click handler');
 
-            // Close menu when a link is clicked
-            const mobileLinks = mobileMenu.querySelectorAll('a');
-            console.log('[Menu] Found ' + mobileLinks.length + ' mobile links');
-            
-            mobileLinks.forEach((link, index) => {
-                link.onclick = function(e) {
-                    console.log('[Menu] Link ' + index + ' clicked: ' + this.href);
-                    // Don't prevent default for actual navigation links
-                    if (this.href && !this.href.includes('#')) {
-                        setTimeout(() => {
+                // Toggle menu on hamburger click
+                hamburgerBtn.onclick = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('[Menu] Hamburger clicked!');
+                    hamburgerBtn.classList.toggle('active');
+                    mobileMenu.classList.toggle('active');
+                    console.log('[Menu] Menu state - active:', hamburgerBtn.classList.contains('active'));
+                };
+
+                // Close menu when a link is clicked
+                const mobileLinks = mobileMenu.querySelectorAll('a');
+                console.log('[Menu] Found ' + mobileLinks.length + ' mobile links');
+                
+                mobileLinks.forEach((link, index) => {
+                    link.onclick = function(e) {
+                        console.log('[Menu] Link ' + index + ' clicked: ' + this.href);
+                        // Don't prevent default for actual navigation links
+                        if (this.href && !this.href.includes('#')) {
+                            setTimeout(() => {
+                                hamburgerBtn.classList.remove('active');
+                                mobileMenu.classList.remove('active');
+                            }, 100);
+                        } else {
+                            // For '#' links, just close the menu
                             hamburgerBtn.classList.remove('active');
                             mobileMenu.classList.remove('active');
-                        }, 100);
-                    } else {
-                        // For '#' links, just close the menu
-                        hamburgerBtn.classList.remove('active');
-                        mobileMenu.classList.remove('active');
-                    }
-                };
-            });
+                        }
+                    };
+                });
 
-            console.log('[Menu] Hamburger menu initialized successfully');
+                console.log('[Menu] ✓ Hamburger menu initialized successfully');
+            } catch (error) {
+                console.error('[Menu] ✗ Initialization error:', error);
+            }
         }
 
         // Initialize menus when DOM is ready
+        console.log('[App] Setting up DOM ready listeners');
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeMenus);
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('[App] DOMContentLoaded event fired');
+                initializeMenus();
+            });
         } else {
+            console.log('[App] DOM already loaded, initializing immediately');
             initializeMenus();
         }
 
@@ -1152,17 +1166,19 @@
         window.addEventListener('load', checkAuthStatus);
 
         // Listen for auth changes
-        const supabase = window.getSupabase();
-        if (supabase) {
-            const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        const supabaseInstance = window.getSupabase();
+        if (supabaseInstance) {
+            const { data: { subscription } } = supabaseInstance.auth.onAuthStateChange((event, session) => {
                 checkAuthStatus();
             });
         }
 
         const footerDashboard = document.getElementById('footerDashboard');
         const footerLogin = document.getElementById('footerLogin');
-        if (supabase && footerDashboard && footerLogin) {
-            supabase.auth.getUser().then(({ data: { user } }) => {
+        const footerSupabase = window.getSupabase();
+        
+        if (footerSupabase && footerDashboard && footerLogin) {
+            footerSupabase.auth.getUser().then(({ data: { user } }) => {
                 if (user && user.email_confirmed_at && footerDashboard && footerLogin) {
                     footerDashboard.style.display = 'block';
                     footerLogin.textContent = 'Dashboard';

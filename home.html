@@ -825,7 +825,8 @@
                 </ul>
             </div>
             <div class="nav-buttons">
-                <button type="button" class="btn-dashboard" id="dashboardBtn" style="display: none;" onclick="handleDashboardClick()">📊 DASHBOARD</button>
+                <button type="button" class="btn-dashboard" id="memberDashboardBtn" style="display: none;" onclick="window.location.href='member-dashboard.html'">👤 MEMBER DASHBOARD</button>
+                <button type="button" class="btn-dashboard" id="executiveDashboardBtn" style="display: none;" onclick="window.location.href='dashboard.html'">📊 EXECUTIVE DASHBOARD</button>
                 <button type="button" class="btn-login" id="loginBtn" onclick="window.location.href='login.html'">Log in</button>
                 <button type="button" class="btn-join" id="joinBtn" onclick="window.location.href='register.html'">Join Club</button>
                 <button type="button" class="btn-logout" id="logoutBtn" style="display: none;" onclick="handleLogoutClick()">Log out</button>
@@ -846,7 +847,8 @@
         <a href="leaderboard.html">Leaderboard</a>
         <a href="team.html">Team</a>
         <a href="resources.html">Resources</a>
-        <a href="#" id="mobileDashboardBtn" style="display: none; color: #00d9ff;" onclick="handleDashboardClick(); return false;">📊 Dashboard</a>
+        <a href="member-dashboard.html" id="mobileMemberDashboardBtn" style="display: none; color: #00d9ff;">👤 Member Dashboard</a>
+        <a href="dashboard.html" id="mobileExecutiveDashboardBtn" style="display: none; color: #00d9ff;">📊 Executive Dashboard</a>
         <a href="#" id="mobileLogoutBtn" style="display: none; color: #ff4455;" onclick="handleLogoutClick(); return false;">Log out</a>
     </div>
 
@@ -1061,72 +1063,18 @@
         // Get button elements at global scope
         const loginBtn = document.getElementById('loginBtn');
         const joinBtn = document.getElementById('joinBtn');
-        const dashboardBtn = document.getElementById('dashboardBtn');
+        const memberDashboardBtn = document.getElementById('memberDashboardBtn');
+        const executiveDashboardBtn = document.getElementById('executiveDashboardBtn');
         const logoutBtn = document.getElementById('logoutBtn');
 
-        // Dashboard click handler
-        window.handleDashboardClick = async () => {
-            try {
-                console.log('[Dashboard] Dashboard button clicked');
-                const supabase = window.getSupabase();
-                
-                if (!supabase) {
-                    console.error('[Dashboard] Supabase not initialized');
-                    window.location.href = 'member-dashboard.html';
-                    return;
-                }
-
-                const { data: { user }, error: userError } = await supabase.auth.getUser();
-                
-                if (userError) {
-                    console.error('[Dashboard] Error getting user:', userError);
-                    window.location.href = 'member-dashboard.html';
-                    return;
-                }
-
-                if (!user) {
-                    console.warn('[Dashboard] No user found');
-                    window.location.href = 'login.html';
-                    return;
-                }
-
-                console.log('[Dashboard] User found:', user.id);
-
-                // Fetch user role from profiles table
-                const { data: profile, error: profileError } = await supabase
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', user.id)
-                    .single();
-                
-                if (profileError) {
-                    console.error('[Dashboard] Error fetching profile:', profileError);
-                    console.log('[Dashboard] Defaulting to member dashboard');
-                    window.location.href = 'member-dashboard.html';
-                    return;
-                }
-
-                console.log('[Dashboard] Profile data:', profile);
-
-                if (profile && profile.role === 'executive') {
-                    console.log('[Dashboard] Executive member detected → redirecting to dashboard.html');
-                    window.location.href = 'dashboard.html';
-                } else {
-                    console.log('[Dashboard] Regular member detected → redirecting to member-dashboard.html');
-                    window.location.href = 'member-dashboard.html';
-                }
-            } catch (error) {
-                console.error('[Dashboard] Unexpected error:', error);
-                window.location.href = 'member-dashboard.html';
-            }
-        };
 
         // Logout click handler
         window.handleLogoutClick = async () => {
             const supabase = window.getSupabase();
             if (supabase) {
                 await supabase.auth.signOut();
-                if (dashboardBtn) dashboardBtn.style.display = 'none';
+                if (memberDashboardBtn) memberDashboardBtn.style.display = 'none';
+                if (executiveDashboardBtn) executiveDashboardBtn.style.display = 'none';
                 if (logoutBtn) logoutBtn.style.display = 'none';
                 if (loginBtn) loginBtn.style.display = 'block';
                 if (joinBtn) joinBtn.style.display = 'block';
@@ -1137,16 +1085,9 @@
         // Mobile menu button handlers
         function initializeMobileButtons() {
             console.log('[Buttons] Initializing mobile buttons');
-            const mobileDashboardBtn = document.getElementById('mobileDashboardBtn');
+            const mobileMemberDashboardBtn = document.getElementById('mobileMemberDashboardBtn');
+            const mobileExecutiveDashboardBtn = document.getElementById('mobileExecutiveDashboardBtn');
             const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
-
-            if (mobileDashboardBtn) {
-                mobileDashboardBtn.onclick = async (e) => {
-                    e.preventDefault();
-                    console.log('[Buttons] Mobile Dashboard clicked');
-                    await window.handleDashboardClick();
-                };
-            }
 
             if (mobileLogoutBtn) {
                 mobileLogoutBtn.onclick = async (e) => {
@@ -1167,7 +1108,8 @@
         // Check authentication status on page load
         async function checkAuthStatus() {
             const supabase = window.getSupabase();
-            const mobileDashboardBtn = document.getElementById('mobileDashboardBtn');
+            const mobileMemberDashboardBtn = document.getElementById('mobileMemberDashboardBtn');
+            const mobileExecutiveDashboardBtn = document.getElementById('mobileExecutiveDashboardBtn');
             const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
             
             if (supabase) {
@@ -1175,27 +1117,62 @@
                     const { data: { user } } = await supabase.auth.getUser();
                     
                     if (user && user.email_confirmed_at) {
-                        // User is logged in and email verified
-                        if (dashboardBtn) dashboardBtn.style.display = 'block';
+                        // User is logged in and email verified - fetch their role
+                        console.log('[Auth] User logged in, fetching role');
+                        
+                        const { data: profile, error: profileError } = await supabase
+                            .from('profiles')
+                            .select('role')
+                            .eq('id', user.id)
+                            .single();
+
+                        if (profileError) {
+                            console.error('[Auth] Error fetching profile:', profileError);
+                            // Default to member if error
+                            if (memberDashboardBtn) memberDashboardBtn.style.display = 'block';
+                            if (executiveDashboardBtn) executiveDashboardBtn.style.display = 'none';
+                            if (mobileMemberDashboardBtn) mobileMemberDashboardBtn.style.display = 'block';
+                            if (mobileExecutiveDashboardBtn) mobileExecutiveDashboardBtn.style.display = 'none';
+                        } else if (profile && profile.role === 'executive') {
+                            console.log('[Auth] Executive user detected');
+                            // Show executive dashboard
+                            if (memberDashboardBtn) memberDashboardBtn.style.display = 'none';
+                            if (executiveDashboardBtn) executiveDashboardBtn.style.display = 'block';
+                            if (mobileMemberDashboardBtn) mobileMemberDashboardBtn.style.display = 'none';
+                            if (mobileExecutiveDashboardBtn) mobileExecutiveDashboardBtn.style.display = 'block';
+                        } else {
+                            console.log('[Auth] Regular member user detected');
+                            // Show member dashboard
+                            if (memberDashboardBtn) memberDashboardBtn.style.display = 'block';
+                            if (executiveDashboardBtn) executiveDashboardBtn.style.display = 'none';
+                            if (mobileMemberDashboardBtn) mobileMemberDashboardBtn.style.display = 'block';
+                            if (mobileExecutiveDashboardBtn) mobileExecutiveDashboardBtn.style.display = 'none';
+                        }
+
+                        // Hide login/join buttons, show logout
                         if (logoutBtn) logoutBtn.style.display = 'block';
                         if (loginBtn) loginBtn.style.display = 'none';
                         if (joinBtn) joinBtn.style.display = 'none';
-                        if (mobileDashboardBtn) mobileDashboardBtn.style.display = 'block';
                         if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
                     } else {
                         // User not logged in or email not verified
-                        if (dashboardBtn) dashboardBtn.style.display = 'none';
+                        console.log('[Auth] User not logged in or email not verified');
+                        if (memberDashboardBtn) memberDashboardBtn.style.display = 'none';
+                        if (executiveDashboardBtn) executiveDashboardBtn.style.display = 'none';
                         if (logoutBtn) logoutBtn.style.display = 'none';
                         if (loginBtn) loginBtn.style.display = 'block';
                         if (joinBtn) joinBtn.style.display = 'block';
-                        if (mobileDashboardBtn) mobileDashboardBtn.style.display = 'none';
+                        if (mobileMemberDashboardBtn) mobileMemberDashboardBtn.style.display = 'none';
+                        if (mobileExecutiveDashboardBtn) mobileExecutiveDashboardBtn.style.display = 'none';
                         if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
                     }
                 } catch (error) {
                     console.error('[Auth] Check error:', error);
-                    if (dashboardBtn) dashboardBtn.style.display = 'none';
+                    if (memberDashboardBtn) memberDashboardBtn.style.display = 'none';
+                    if (executiveDashboardBtn) executiveDashboardBtn.style.display = 'none';
                     if (logoutBtn) logoutBtn.style.display = 'none';
-                    if (mobileDashboardBtn) mobileDashboardBtn.style.display = 'none';
+                    if (mobileMemberDashboardBtn) mobileMemberDashboardBtn.style.display = 'none';
+                    if (mobileExecutiveDashboardBtn) mobileExecutiveDashboardBtn.style.display = 'none';
                     if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
                 }
             }

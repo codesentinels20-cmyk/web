@@ -200,6 +200,10 @@
         <div id="login" class="tab-content active">
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
+                    <label for="loginClubId">Club ID *</label>
+                    <input type="text" id="loginClubId" placeholder="Enter your Club ID" required>
+                </div>
+                <div class="form-group">
                     <label for="loginEmail">Email</label>
                     <input type="email" id="loginEmail" placeholder="Enter your email" required>
                 </div>
@@ -327,15 +331,34 @@
         // ========== Login Handler ==========
         async function handleLogin(e) {
             e.preventDefault();
+            const clubId = document.getElementById('loginClubId').value.trim();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const loginBtn = document.getElementById('loginBtn');
             const messageDiv = document.getElementById('loginMessage');
 
             loginBtn.disabled = true;
-            loginBtn.textContent = 'Logging in...';
+            loginBtn.textContent = 'Verifying Club ID...';
 
             try {
+                // First verify the Club ID
+                console.log('Verifying Club ID:', clubId);
+                const { data: clubData, error: clubError } = await supabaseClient
+                    .from('executive_id')
+                    .select('*')
+                    .eq('club_id', clubId)
+                    .single();
+
+                if (clubError || !clubData) {
+                    messageDiv.innerHTML = '<div class="message error">❌ Invalid Club ID. Please enter a valid Club ID.</div>';
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Login';
+                    return;
+                }
+
+                // Club ID verified, proceed with login
+                loginBtn.textContent = 'Checking credentials...';
+
                 const { data: { user }, error: signInError } = await supabaseClient.auth.signInWithPassword({
                     email,
                     password
@@ -345,14 +368,29 @@
                     throw new Error(signInError.message);
                 }
 
-                if (!user.email_confirmed_at) {
-                    messageDiv.innerHTML = '<div class="message error">Please verify your email first. Check your inbox for the verification link.</div>';
+                // Verify the user's club ID matches the login club ID
+                const { data: userProfile, error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .select('club_id')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profileError) {
+                    console.error('Error fetching user profile:', profileError);
+                    messageDiv.innerHTML = '<div class="message error">Error verifying user profile. Please try again.</div>';
                     loginBtn.disabled = false;
                     loginBtn.textContent = 'Login';
                     return;
                 }
 
-                messageDiv.innerHTML = '<div class="message success">Login successful! Redirecting...</div>';
+                if (!userProfile || userProfile.club_id !== clubId) {
+                    messageDiv.innerHTML = '<div class="message error">❌ Club ID does not match your registered account. Please enter the correct Club ID.</div>';
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Login';
+                    return;
+                }
+
+                messageDiv.innerHTML = '<div class="message success">✅ Login successful! Redirecting...</div>';
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
                 }, 1500);

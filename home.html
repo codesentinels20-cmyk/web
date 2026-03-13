@@ -739,7 +739,11 @@
 
         /* Custom Cursor */
         * {
-            cursor: auto;
+            cursor: none;
+        }
+
+        body {
+            cursor: none;
         }
 
         .cursor-outer {
@@ -753,7 +757,7 @@
             transform: translate(-50%, -50%);
             transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease;
             display: block;
-            opacity: 0;
+            opacity: 1;
             left: -9999px;
             top: -9999px;
         }
@@ -768,7 +772,7 @@
             z-index: 9999;
             transform: translate(-50%, -50%);
             display: block;
-            opacity: 0;
+            opacity: 1;
             left: -9999px;
             top: -9999px;
         }

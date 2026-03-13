@@ -842,8 +842,8 @@
         <a href="leaderboard.html">Leaderboard</a>
         <a href="team.html">Team</a>
         <a href="resources.html">Resources</a>
-        <a href="#" id="mobileDashboardBtn" style="display: none; color: #00d9ff;">📊 Dashboard</a>
-        <a href="#" id="mobileLogoutBtn" style="display: none; color: #ff4455;">Log out</a>
+        <a href="#" id="mobileDashboardBtn" style="display: none; color: #00d9ff;" onclick="handleDashboardClick(); return false;">📊 Dashboard</a>
+        <a href="#" id="mobileLogoutBtn" style="display: none; color: #ff4455;" onclick="handleLogoutClick(); return false;">Log out</a>
     </div>
 
     <!-- Hero Section -->
@@ -988,24 +988,57 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="credentials.js"></script>
     <script>
-        // Hamburger Menu Toggle
-        const hamburgerBtn = document.getElementById('hamburgerBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
+        // Wait for DOM to be fully ready
+        function initializeMenus() {
+            console.log('[Menu] Initializing hamburger menu');
+            
+            // Hamburger Menu Toggle
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
 
-        if (hamburgerBtn && mobileMenu) {
-            hamburgerBtn.onclick = () => {
+            if (!hamburgerBtn || !mobileMenu) {
+                console.error('[Menu] Missing hamburger elements');
+                return;
+            }
+
+            // Toggle menu on hamburger click
+            hamburgerBtn.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('[Menu] Hamburger clicked');
                 hamburgerBtn.classList.toggle('active');
                 mobileMenu.classList.toggle('active');
             };
 
             // Close menu when a link is clicked
             const mobileLinks = mobileMenu.querySelectorAll('a');
-            mobileLinks.forEach(link => {
-                link.onclick = () => {
-                    hamburgerBtn.classList.remove('active');
-                    mobileMenu.classList.remove('active');
+            console.log('[Menu] Found ' + mobileLinks.length + ' mobile links');
+            
+            mobileLinks.forEach((link, index) => {
+                link.onclick = function(e) {
+                    console.log('[Menu] Link ' + index + ' clicked: ' + this.href);
+                    // Don't prevent default for actual navigation links
+                    if (this.href && !this.href.includes('#')) {
+                        setTimeout(() => {
+                            hamburgerBtn.classList.remove('active');
+                            mobileMenu.classList.remove('active');
+                        }, 100);
+                    } else {
+                        // For '#' links, just close the menu
+                        hamburgerBtn.classList.remove('active');
+                        mobileMenu.classList.remove('active');
+                    }
                 };
             });
+
+            console.log('[Menu] Hamburger menu initialized successfully');
+        }
+
+        // Initialize menus when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeMenus);
+        } else {
+            initializeMenus();
         }
 
         // Get button elements at global scope
@@ -1049,27 +1082,41 @@
         };
 
         // Mobile menu button handlers
-        const mobileDashboardBtn = document.getElementById('mobileDashboardBtn');
-        const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
+        function initializeMobileButtons() {
+            console.log('[Buttons] Initializing mobile buttons');
+            const mobileDashboardBtn = document.getElementById('mobileDashboardBtn');
+            const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
 
-        if (mobileDashboardBtn) {
-            mobileDashboardBtn.onclick = async (e) => {
-                e.preventDefault();
-                await window.handleDashboardClick();
-            };
+            if (mobileDashboardBtn) {
+                mobileDashboardBtn.onclick = async (e) => {
+                    e.preventDefault();
+                    console.log('[Buttons] Mobile Dashboard clicked');
+                    await window.handleDashboardClick();
+                };
+            }
+
+            if (mobileLogoutBtn) {
+                mobileLogoutBtn.onclick = async (e) => {
+                    e.preventDefault();
+                    console.log('[Buttons] Mobile Logout clicked');
+                    await window.handleLogoutClick();
+                };
+            }
         }
 
-        if (mobileLogoutBtn) {
-            mobileLogoutBtn.onclick = async (e) => {
-                e.preventDefault();
-                await window.handleLogoutClick();
-            };
+        // Initialize mobile buttons when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeMobileButtons);
+        } else {
+            initializeMobileButtons();
         }
 
         // Check authentication status on page load
         async function checkAuthStatus() {
             const supabase = window.getSupabase();
+            const mobileDashboardBtn = document.getElementById('mobileDashboardBtn');
+            const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+            
             if (supabase) {
                 try {
                     const { data: { user } } = await supabase.auth.getUser();
@@ -1092,7 +1139,7 @@
                         if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
                     }
                 } catch (error) {
-                    console.error('Auth check error:', error);
+                    console.error('[Auth] Check error:', error);
                     if (dashboardBtn) dashboardBtn.style.display = 'none';
                     if (logoutBtn) logoutBtn.style.display = 'none';
                     if (mobileDashboardBtn) mobileDashboardBtn.style.display = 'none';
@@ -1114,10 +1161,9 @@
 
         const footerDashboard = document.getElementById('footerDashboard');
         const footerLogin = document.getElementById('footerLogin');
-        if (supabase) {
+        if (supabase && footerDashboard && footerLogin) {
             supabase.auth.getUser().then(({ data: { user } }) => {
-                
-                if (user && user.email_confirmed_at) {
+                if (user && user.email_confirmed_at && footerDashboard && footerLogin) {
                     footerDashboard.style.display = 'block';
                     footerLogin.textContent = 'Dashboard';
                     footerLogin.href = 'dashboard.html';

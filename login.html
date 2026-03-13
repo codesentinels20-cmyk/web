@@ -346,6 +346,10 @@
 
                 console.log('✓ Login successful for user:', user.id);
 
+                // Store user type as member in localStorage
+                localStorage.setItem('userType', 'member');
+                console.log('Member user logged in, stored in localStorage');
+
                 messageDiv.innerHTML = '<div class="message success">✅ Login successful! Redirecting...</div>';
                 setTimeout(() => {
                     window.location.href = 'member-dashboard.html';

@@ -1067,12 +1067,13 @@
         const executiveDashboardBtn = document.getElementById('executiveDashboardBtn');
         const logoutBtn = document.getElementById('logoutBtn');
 
-
         // Logout click handler
         window.handleLogoutClick = async () => {
             const supabase = window.getSupabase();
             if (supabase) {
                 await supabase.auth.signOut();
+                // Clear user type from localStorage
+                localStorage.removeItem('userType');
                 if (memberDashboardBtn) memberDashboardBtn.style.display = 'none';
                 if (executiveDashboardBtn) executiveDashboardBtn.style.display = 'none';
                 if (logoutBtn) logoutBtn.style.display = 'none';
@@ -1116,25 +1117,14 @@
                 try {
                     const { data: { user } } = await supabase.auth.getUser();
                     
-                    if (user && user.email_confirmed_at) {
-                        // User is logged in and email verified - fetch their role
-                        console.log('[Auth] User logged in, fetching role');
+                    if (user) {
+                        console.log('[Auth] User logged in');
                         
-                        const { data: profile, error: profileError } = await supabase
-                            .from('profiles')
-                            .select('role')
-                            .eq('id', user.id)
-                            .single();
-
-                        if (profileError) {
-                            console.error('[Auth] Error fetching profile:', profileError);
-                            // Default to member if error
-                            if (memberDashboardBtn) memberDashboardBtn.style.display = 'block';
-                            if (executiveDashboardBtn) executiveDashboardBtn.style.display = 'none';
-                            if (mobileMemberDashboardBtn) mobileMemberDashboardBtn.style.display = 'block';
-                            if (mobileExecutiveDashboardBtn) mobileExecutiveDashboardBtn.style.display = 'none';
-                        } else if (profile && profile.role === 'executive') {
-                            console.log('[Auth] Executive user detected');
+                        // Check localStorage for user type (executive login sets this)
+                        const userType = localStorage.getItem('userType');
+                        
+                        if (userType === 'executive') {
+                            console.log('[Auth] Executive user detected from localStorage');
                             // Show executive dashboard
                             if (memberDashboardBtn) memberDashboardBtn.style.display = 'none';
                             if (executiveDashboardBtn) executiveDashboardBtn.style.display = 'block';
@@ -1155,8 +1145,9 @@
                         if (joinBtn) joinBtn.style.display = 'none';
                         if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
                     } else {
-                        // User not logged in or email not verified
-                        console.log('[Auth] User not logged in or email not verified');
+                        // User not logged in
+                        console.log('[Auth] User not logged in');
+                        localStorage.removeItem('userType');
                         if (memberDashboardBtn) memberDashboardBtn.style.display = 'none';
                         if (executiveDashboardBtn) executiveDashboardBtn.style.display = 'none';
                         if (logoutBtn) logoutBtn.style.display = 'none';

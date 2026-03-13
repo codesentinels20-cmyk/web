@@ -830,30 +830,6 @@
         } catch (error) {
             console.error('Cursor initialization error:', error);
         }
-
-        // Add hover effect on interactive elements
-        const interactiveElements = document.querySelectorAll('a, button, .info-card, .stat-box, .value-item');
-        interactiveElements.forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                cursorOuter.classList.add('hover');
-                cursorInner.classList.add('hover');
-            });
-            el.addEventListener('mouseleave', () => {
-                cursorOuter.classList.remove('hover');
-                cursorInner.classList.remove('hover');
-            });
-        });
-
-        // Hide cursor when leaving window
-        document.addEventListener('mouseleave', () => {
-            cursorOuter.style.opacity = '0';
-            cursorInner.style.opacity = '0';
-        });
-
-        document.addEventListener('mouseenter', () => {
-            cursorOuter.style.opacity = '1';
-            cursorInner.style.opacity = '1';
-        });
     </script>
 </body>
 </html>

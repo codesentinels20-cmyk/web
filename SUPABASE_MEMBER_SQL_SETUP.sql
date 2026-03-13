@@ -20,6 +20,7 @@ create table if not exists profiles (
   phone text,
   role text default 'member' check (role in ('member', 'executive')),
   xp integer default 0,
+  profile_picture_url text,
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now()
 );

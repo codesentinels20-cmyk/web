@@ -450,9 +450,6 @@
                 <li><a href="resources.html">RESOURCES</a></li>
                 <li><a href="home.html">CONTACT</a></li>
             </ul>
-            <button class="executive-login" id="loginBtn">EXECUTIVE LOGIN</button>
-            <button id="logoutBtn" style="display: none; background: #ff6600; margin-left: 15px;">LOGOUT</button>
-            
             <!-- Hamburger Menu -->
             <button class="hamburger-menu" id="hamburgerBtn">
                 <span></span>
@@ -471,10 +468,6 @@
         <a href="dashboard.html" id="mobileDashboardLink" style="display: none;">DASHBOARD</a>
         <a href="resources.html">RESOURCES</a>
         <a href="home.html">CONTACT</a>
-        <div class="mobile-buttons">
-            <button class="executive-login" id="mobileLoginBtn">EXECUTIVE LOGIN</button>
-            <button id="mobileLogoutBtn" style="display: none;">LOGOUT</button>
-        </div>
     </div>
 
     <section class="team-section">
@@ -701,38 +694,14 @@
 
         // Auth status handling
         const dashboardLink = document.getElementById('dashboardLink');
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
         const mobileDashboardLink = document.getElementById('mobileDashboardLink');
-        const mobileLoginBtn = document.getElementById('mobileLoginBtn');
-        const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
 
-        // Check if user is logged in (basic check)
-        // Note: If using Supabase, add the Supabase library here
-        const isLoggedIn = localStorage.getItem('userLoggedIn');
-        if (isLoggedIn) {
+        // Show dashboard link if user is authenticated
+        const userType = localStorage.getItem('userType');
+        if (userType) {
             dashboardLink.style.display = 'block';
             mobileDashboardLink.style.display = 'block';
-            loginBtn.style.display = 'none';
-            mobileLoginBtn.style.display = 'none';
-            logoutBtn.style.display = 'block';
-            mobileLogoutBtn.style.display = 'block';
-
-            logoutBtn.addEventListener('click', () => {
-                localStorage.removeItem('userLoggedIn');
-                window.location.href = 'home.html';
-            });
-
-            mobileLogoutBtn.addEventListener('click', () => {
-                localStorage.removeItem('userLoggedIn');
-                window.location.href = 'home.html';
-            });
         }
-
-        // Mobile login button handler
-        mobileLoginBtn.addEventListener('click', () => {
-            window.location.href = 'auth.html';
-        });
 
         class MatrixRain {
             constructor(canvasId) {
@@ -798,9 +767,12 @@
             });
         });
 
-        document.querySelector('.executive-login').addEventListener('click', () => {
-            window.location.href = 'auth.html';
-        });
+        const executiveLoginBtn = document.querySelector('.executive-login');
+        if (executiveLoginBtn) {
+            executiveLoginBtn.addEventListener('click', () => {
+                window.location.href = 'auth.html';
+            });
+        }
 
         /* ============================================
            CUSTOM CURSOR
@@ -858,30 +830,6 @@
         } catch (error) {
             console.error('Cursor initialization error:', error);
         }
-
-        const interactiveElements = document.querySelectorAll('a, button, .flip-card');
-        interactiveElements.forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                cursorOuter.classList.add('hover');
-                cursorInner.classList.add('hover');
-            });
-            el.addEventListener('mouseleave', () => {
-                cursorOuter.classList.remove('hover');
-                cursorInner.classList.remove('hover');
-            });
-        });
-
-        document.addEventListener('mouseleave', () => {
-            cursorOuter.style.opacity = '0';
-            cursorInner.style.opacity = '0';
-        });
-
-        document.addEventListener('mouseenter', () => {
-            cursorOuter.style.opacity = '1';
-            cursorInner.style.opacity = '1';
-        });
-
-
     </script>
 </body>
 </html>

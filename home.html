@@ -119,8 +119,6 @@
             gap: 12px;
             align-items: center;
         }
-
-        .btn-login {
             background: none;
             border: 2px solid #00ff41;
             padding: 8px 18px;
@@ -677,51 +675,195 @@
                 display: flex;
             }
 
+            .nav-buttons {
+                display: none !important;
+            }
+
+            .nav-container {
+                padding: 12px 15px;
+                flex-wrap: wrap;
+            }
+
+            .nav-left {
+                gap: 15px;
+                width: 100%;
+            }
+
+            .logo-section {
+                font-size: 14px;
+                gap: 8px;
+            }
+
+            .logo-img {
+                width: 32px;
+                height: 32px;
+            }
+
             .hero-title {
-                font-size: 40px;
+                font-size: 32px;
+                margin-bottom: 15px;
             }
 
             .hero-subtitle {
-                font-size: 16px;
+                font-size: 14px;
+                margin-bottom: 30px;
+            }
+
+            .hero-badge {
+                padding: 6px 12px;
+                font-size: 12px;
+                margin-bottom: 15px;
+            }
+
+            .hero-buttons {
+                gap: 10px;
+                margin-bottom: 40px;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                padding: 10px 20px;
+                font-size: 14px;
+                flex: 1;
+                min-width: 120px;
             }
 
             .stats {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                padding: 20px;
+                margin-bottom: 30px;
+            }
+
+            .stat-number {
+                font-size: 28px;
+                margin-bottom: 5px;
+            }
+
+            .stat-label {
+                font-size: 12px;
             }
 
             .section-title {
-                font-size: 32px;
+                font-size: 28px;
             }
 
             .hero {
-                padding: 40px 20px;
+                padding: 30px 15px;
             }
 
             .what-we-do,
             .bottom-cards,
             .cta-section {
-                padding-left: 20px;
-                padding-right: 20px;
+                padding-left: 15px;
+                padding-right: 15px;
             }
 
             .cta-box {
-                padding: 40px 20px;
+                padding: 30px 15px;
             }
 
             .cta-title {
-                font-size: 28px;
-            }
-
-            .nav-container {
-                padding: 12px 20px;
-            }
-
-            .nav-left {
-                gap: 20px;
+                font-size: 24px;
             }
 
             .nav-menu {
                 gap: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-container {
+                padding: 10px 12px;
+            }
+
+            .logo-section {
+                font-size: 13px;
+                gap: 6px;
+            }
+
+            .logo-img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .hero {
+                padding: 20px 12px;
+            }
+
+            .hero-title {
+                font-size: 24px;
+                margin-bottom: 12px;
+                letter-spacing: 1px;
+            }
+
+            .hero-subtitle {
+                font-size: 13px;
+                margin-bottom: 20px;
+                line-height: 1.4;
+            }
+
+            .hero-badge {
+                padding: 5px 10px;
+                font-size: 11px;
+                margin-bottom: 12px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                gap: 8px;
+                margin-bottom: 30px;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                padding: 10px 16px;
+                font-size: 13px;
+                width: 100%;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 15px;
+                margin-bottom: 25px;
+            }
+
+            .stat-number {
+                font-size: 24px;
+            }
+
+            .stat-label {
+                font-size: 11px;
+            }
+
+            .section-title {
+                font-size: 22px;
+            }
+
+            .what-we-do,
+            .bottom-cards,
+            .cta-section {
+                padding-left: 12px;
+                padding-right: 12px;
+                padding-top: 40px;
+                padding-bottom: 40px;
+            }
+
+            .cta-box {
+                padding: 20px 12px;
+            }
+
+            .cta-title {
+                font-size: 20px;
+            }
+
+            .btn-login,
+            .btn-join,
+            .btn-dashboard,
+            .btn-logout {
+                padding: 8px 12px;
+                font-size: 11px;
             }
         }
 
@@ -1054,10 +1196,44 @@
             document.addEventListener('DOMContentLoaded', () => {
                 console.log('[App] DOMContentLoaded event fired');
                 initializeMenus();
+                // Quick check: show dashboard button immediately from localStorage if available
+                quickAuthCheck();
             });
         } else {
             console.log('[App] DOM already loaded, initializing immediately');
             initializeMenus();
+            // Quick check: show dashboard button immediately from localStorage if available
+            quickAuthCheck();
+        }
+
+        // Quick synchronous check for immediate button display
+        function quickAuthCheck() {
+            const userType = localStorage.getItem('userType');
+            const mobileMemberDashboardBtn = document.getElementById('mobileMemberDashboardBtn');
+            const mobileExecutiveDashboardBtn = document.getElementById('mobileExecutiveDashboardBtn');
+            const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+            
+            if (userType === 'executive') {
+                console.log('[Auth] Quick check: Executive user');
+                if (memberDashboardBtn) memberDashboardBtn.style.display = 'none';
+                if (executiveDashboardBtn) executiveDashboardBtn.style.display = 'block';
+                if (mobileMemberDashboardBtn) mobileMemberDashboardBtn.style.display = 'none';
+                if (mobileExecutiveDashboardBtn) mobileExecutiveDashboardBtn.style.display = 'block';
+                if (loginBtn) loginBtn.style.display = 'none';
+                if (joinBtn) joinBtn.style.display = 'none';
+                if (logoutBtn) logoutBtn.style.display = 'block';
+                if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
+            } else if (userType === 'member') {
+                console.log('[Auth] Quick check: Member user');
+                if (memberDashboardBtn) memberDashboardBtn.style.display = 'block';
+                if (executiveDashboardBtn) executiveDashboardBtn.style.display = 'none';
+                if (mobileMemberDashboardBtn) mobileMemberDashboardBtn.style.display = 'block';
+                if (mobileExecutiveDashboardBtn) mobileExecutiveDashboardBtn.style.display = 'none';
+                if (loginBtn) loginBtn.style.display = 'none';
+                if (joinBtn) joinBtn.style.display = 'none';
+                if (logoutBtn) logoutBtn.style.display = 'block';
+                if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
+            }
         }
 
         // Get button elements at global scope
@@ -1120,19 +1296,20 @@
                     if (user) {
                         console.log('[Auth] User logged in');
                         
-                        // Check localStorage for user type (executive login sets this)
+                        // Check localStorage for user type immediately (synchronous)
                         const userType = localStorage.getItem('userType');
+                        console.log('[Auth] User type from localStorage:', userType);
                         
                         if (userType === 'executive') {
-                            console.log('[Auth] Executive user detected from localStorage');
-                            // Show executive dashboard
+                            console.log('[Auth] Executive user detected');
+                            // Show executive dashboard only
                             if (memberDashboardBtn) memberDashboardBtn.style.display = 'none';
                             if (executiveDashboardBtn) executiveDashboardBtn.style.display = 'block';
                             if (mobileMemberDashboardBtn) mobileMemberDashboardBtn.style.display = 'none';
                             if (mobileExecutiveDashboardBtn) mobileExecutiveDashboardBtn.style.display = 'block';
                         } else {
                             console.log('[Auth] Regular member user detected');
-                            // Show member dashboard
+                            // Show member dashboard only
                             if (memberDashboardBtn) memberDashboardBtn.style.display = 'block';
                             if (executiveDashboardBtn) executiveDashboardBtn.style.display = 'none';
                             if (mobileMemberDashboardBtn) mobileMemberDashboardBtn.style.display = 'block';

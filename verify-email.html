@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifying Email - Cyber Sentinels</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', 'JetBrains Mono', monospace;
+            background: #0a0e27;
+            color: #00ff41;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            background: rgba(10, 14, 39, 0.95);
+            border: 2px solid #00ff41;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            text-shadow: 0 0 10px #00ff41;
+            margin-bottom: 20px;
+        }
+
+        .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .message {
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .success {
+            background: rgba(0, 255, 65, 0.15);
+            border: 1px solid #00ff41;
+            color: #00ff41;
+        }
+
+        .error {
+            background: rgba(255, 65, 65, 0.15);
+            border: 1px solid #ff4141;
+            color: #ff4141;
+        }
+
+        .info {
+            background: rgba(0, 150, 255, 0.15);
+            border: 1px solid #0096ff;
+            color: #0096ff;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: #00ff41;
+            color: #0a0e27;
+            border: none;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            box-shadow: 0 0 20px #00ff41;
+            transform: scale(1.05);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .links {
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        .links a {
+            color: #00ff41;
+            text-decoration: none;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+
+        .links a:hover {
+            text-shadow: 0 0 10px #00ff41;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 255, 65, 0.3);
+            border-top-color: #00ff41;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <div class="container">
+        <h1>> EMAIL_VERIFICATION</h1>
+        <div class="icon" id="icon">✉️</div>
+        <div id="statusContainer" class="status info">
+            <div class="spinner"></div> Verifying your email...
+        </div>
+        <div id="messageContainer" class="message">
+            Please wait while we verify your email address.
+        </div>
+        <div id="actionContainer"></div>
+        <div class="links">
+            <a href="home.html">Home</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="credentials.js"></script>
+    <script>
+        // ========== Matrix Rain Effect ==========
+        function initMatrixRain() {
+            const canvas = document.getElementById('canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const fontSize = 16;
+            const columns = Math.floor(canvas.width / fontSize);
+            const drops = Array(columns).fill(0);
+
+            function drawMatrix() {
+                ctx.fillStyle = 'rgba(10, 14, 39, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#00ff41';
+                ctx.font = fontSize + 'px Courier New';
+                for (let i = 0; i < drops.length; i++) {
+                    const char = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+
+            setInterval(drawMatrix, 50);
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+
+        // ========== VERIFY EMAIL ==========
+        async function verifyEmail() {
+            try {
+                initMatrixRain();
+
+                const supabase = window.getSupabase();
+                if (!supabase) throw new Error('Supabase not initialized');
+
+                console.log('🔍 Verifying email with Supabase...');
+
+                // Supabase automatically handles the verification when user clicks the email link
+                // The verification token is in the URL fragment (#access_token=..., #error=...)
+                // Supabase JS client automatically processes this
+
+                // Check if verification was successful by getting the current user
+                const { data: { user }, error } = await supabase.auth.getUser();
+
+                if (error) {
+                    console.error('❌ Verification error:', error);
+                    showError('Verification failed: ' + error.message);
+                    return;
+                }
+
+                if (!user) {
+                    console.log('No session found, verification might be pending');
+                    showInfo('Verification link may have expired. Please try registering again.');
+                    return;
+                }
+
+                if (user.email_confirmed_at) {
+                    console.log('✓ Email verified successfully:', user.email);
+                    showSuccess('Your email has been verified successfully! Redirecting to login...');
+                    
+                    // Sign out the auto-logged-in session
+                    await supabase.auth.signOut();
+                    
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2500);
+                } else {
+                    console.log('⚠️ Email verification pending');
+                    showInfo('Your email verification is being processed. You will be redirected soon...');
+                    
+                    // Wait a moment and check again
+                    setTimeout(verifyEmail, 2000);
+                }
+
+            } catch (error) {
+                console.error('❌ Verification process error:', error);
+                showError('An error occurred: ' + error.message);
+            }
+        }
+
+        // ========== UI HELPERS ==========
+        function showSuccess(message) {
+            const statusContainer = document.getElementById('statusContainer');
+            const messageContainer = document.getElementById('messageContainer');
+            const icon = document.getElementById('icon');
+            
+            statusContainer.className = 'status success';
+            statusContainer.innerHTML = '✅ Success';
+            messageContainer.textContent = message;
+            icon.textContent = '🎉';
+        }
+
+        function showError(message) {
+            const statusContainer = document.getElementById('statusContainer');
+            const messageContainer = document.getElementById('messageContainer');
+            const icon = document.getElementById('icon');
+            const actionContainer = document.getElementById('actionContainer');
+            
+            statusContainer.className = 'status error';
+            statusContainer.innerHTML = '❌ Error';
+            messageContainer.textContent = message;
+            icon.textContent = '❌';
+            
+            actionContainer.innerHTML = `
+                <button onclick="window.location.href='register.html'">Try Again</button>
+            `;
+        }
+
+        function showInfo(message) {
+            const statusContainer = document.getElementById('statusContainer');
+            const messageContainer = document.getElementById('messageContainer');
+            const icon = document.getElementById('icon');
+            
+            statusContainer.className = 'status info';
+            statusContainer.innerHTML = 'ℹ️ Info';
+            messageContainer.textContent = message;
+            icon.textContent = 'ℹ️';
+        }
+
+        // ========== INITIALIZE ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            initMatrixRain();
+            verifyEmail();
+        });
+    </script>
+</body>
+</html>

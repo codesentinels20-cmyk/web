@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Dashboard - Cyber Sentinels</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            font-family: 'Segoe UI', 'JetBrains Mono', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ========== NAVBAR ========== */
+        nav {
+            background: rgba(0, 0, 0, 0.95);
+            border-bottom: 2px solid #00ff41;
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: #00ff41;
+            font-weight: 600;
+            font-size: 18px;
+            letter-spacing: 2px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #00ff41 0%, #00d9ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 25px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: #00ff41;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-menu a:hover {
+            text-shadow: 0 0 15px rgba(0, 255, 65, 0.8);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-left: auto;
+        }
+
+        .member-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #00ff41;
+        }
+
+        .xp-badge {
+            background: rgba(0, 255, 65, 0.2);
+            border: 1px solid #00ff41;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #ff4141;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+
+        .logout-btn:hover {
+            background: #cc3333;
+            box-shadow: 0 0 15px rgba(255, 65, 65, 0.5);
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            color: #00ff41;
+            text-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #00ff41;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* ========== STATS GRID ========== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #00ff41;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 0 25px rgba(0, 255, 65, 0.4);
+            transform: translateY(-5px);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #00884c;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            color: #00ff41;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stat-subtext {
+            font-size: 13px;
+            color: #00884c;
+            margin-top: 8px;
+        }
+
+        /* ========== SECTIONS ========== */
+        .section {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #00ff41;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #00ff41;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+        }
+
+        /* ========== EVENT LIST ========== */
+        .event-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .event-item {
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 3px solid #00ff41;
+            padding: 15px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .event-item:hover {
+            background: rgba(0, 255, 65, 0.1);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+        }
+
+        .event-name {
+            font-weight: bold;
+            color: #00ff41;
+            margin-bottom: 5px;
+        }
+
+        .event-date {
+            font-size: 12px;
+            color: #00884c;
+        }
+
+        .event-xp {
+            font-size: 12px;
+            background: rgba(0, 255, 65, 0.15);
+            color: #00ff41;
+            padding: 3px 8px;
+            border-radius: 3px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #00884c;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #00ff41;
+        }
+
+        .error {
+            background: rgba(255, 65, 65, 0.1);
+            border: 1px solid #ff4141;
+            color: #ff4141;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .page-header h1 {
+                font-size: 24px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-value {
+                font-size: 28px;
+            }
+
+            .container {
+                padding: 20px 10px;
+            }
+
+            .section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ========== NAVIGATION ========== -->
+    <nav>
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="home.html" class="logo-section">
+                    <div class="logo-icon">⚔️</div>
+                    <span>Cyber Sentinels</span>
+                </a>
+                <ul class="nav-menu">
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="leaderboard.html">Leaderboard</a></li>
+                    <li><a href="resources.html">Resources</a></li>
+                </ul>
+            </div>
+            <div class="nav-right">
+                <div class="member-info">
+                    <span id="memberName">Loading...</span>
+                    <div class="xp-badge" id="xpBadge">XP: --</div>
+                </div>
+                <button class="logout-btn" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1>MEMBER DASHBOARD</h1>
+            <p>━━ Welcome to Cyber Sentinels ━━</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total XP</div>
+                <div class="stat-value" id="totalXP">0</div>
+                <div class="stat-subtext">Experience Points</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Rank</div>
+                <div class="stat-value" id="userRank">#1</div>
+                <div class="stat-subtext">Leaderboard Position</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Events Joined</div>
+                <div class="stat-value" id="eventsJoined">0</div>
+                <div class="stat-subtext">Registered Events</div>
+            </div>
+        </div>
+
+        <!-- Registered Events Section -->
+        <div class="section">
+            <div class="section-title">📋 Registered Events</div>
+            <div id="registeredEventsContainer" class="event-list">
+                <div class="loading">Loading events...</div>
+            </div>
+        </div>
+
+        <!-- Upcoming Events Section -->
+        <div class="section">
+            <div class="section-title">🗓️ Upcoming Events</div>
+            <div id="upcomingEventsContainer" class="event-list">
+                <div class="loading">Loading events...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="credentials.js"></script>
+    <script>
+        let currentUser = null;
+        let memberProfile = null;
+
+        // ========== INITIALIZE ==========
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const supabase = window.getSupabase();
+                if (!supabase) throw new Error('Supabase not initialized');
+
+                // Check authentication
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                if (userError || !user) {
+                    console.log('User not authenticated, redirecting to login');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentUser = user;
+                console.log('✓ Authenticated as:', user.email);
+
+                // Load member profile
+                await loadMemberProfile();
+                
+                // Load events
+                await loadRegisteredEvents();
+                await loadUpcomingEvents();
+
+            } catch (error) {
+                console.error('❌ Initialization error:', error);
+                showError('Error loading dashboard');
+            }
+        });
+
+        // ========== LOAD MEMBER PROFILE ==========
+        async function loadMemberProfile() {
+            const supabase = window.getSupabase();
+            
+            try {
+                console.log('Loading profile for user:', currentUser.id);
+
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (error) {
+                    if (error.code === 'PGRST116') {
+                        // Profile doesn't exist yet - create it
+                        console.log('Profile not found, creating new profile');
+                        const userData = currentUser.user_metadata || {};
+                        
+                        const { data: newProfile, error: insertError } = await supabase
+                            .from('profiles')
+                            .insert([{
+                                id: currentUser.id,
+                                full_name: userData.full_name || 'Member',
+                                email: currentUser.email,
+                                department: userData.department || '',
+                                year: userData.year || '',
+                                register_no: userData.register_no || '',
+                                phone: userData.phone || '',
+                                role: 'member',
+                                xp: 0
+                            }])
+                            .select()
+                            .single();
+
+                        if (insertError) throw insertError;
+                        memberProfile = newProfile;
+                    } else {
+                        throw error;
+                    }
+                } else {
+                    memberProfile = profile;
+                }
+
+                console.log('✓ Profile loaded:', memberProfile);
+                updateProfileUI();
+
+            } catch (error) {
+                console.error('❌ Profile loading error:', error);
+                showError('Error loading profile: ' + error.message);
+            }
+        }
+
+        // ========== UPDATE PROFILE UI ==========
+        function updateProfileUI() {
+            if (!memberProfile) return;
+
+            document.getElementById('memberName').textContent = memberProfile.full_name || 'Member';
+            document.getElementById('totalXP').textContent = memberProfile.xp || '0';
+            document.getElementById('xpBadge').textContent = `XP: ${memberProfile.xp || 0}`;
+
+            // Load rank
+            loadUserRank();
+        }
+
+        // ========== LOAD USER RANK ==========
+        async function loadUserRank() {
+            const supabase = window.getSupabase();
+            
+            try {
+                const { data: allProfiles, error } = await supabase
+                    .from('profiles')
+                    .select('id, xp')
+                    .eq('role', 'member')
+                    .order('xp', { ascending: false });
+
+                if (error) throw error;
+
+                const rank = allProfiles.findIndex(p => p.id === currentUser.id) + 1;
+                document.getElementById('userRank').textContent = `#${rank}`;
+                console.log('✓ User rank:', rank);
+
+            } catch (error) {
+                console.error('❌ Rank loading error:', error);
+            }
+        }
+
+        // ========== LOAD REGISTERED EVENTS ==========
+        async function loadRegisteredEvents() {
+            const supabase = window.getSupabase();
+            const container = document.getElementById('registeredEventsContainer');
+
+            try {
+                const { data: registrations, error } = await supabase
+                    .from('member_event_registrations')
+                    .select(`
+                        id,
+                        event_id,
+                        registered_at,
+                        events:event_id (
+                            id,
+                            title,
+                            event_date,
+                            xp_reward
+                        )
+                    `)
+                    .eq('member_id', currentUser.id)
+                    .order('registered_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!registrations || registrations.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No events registered yet. Join an event to get started!</p></div>';
+                    document.getElementById('eventsJoined').textContent = '0';
+                    return;
+                }
+
+                document.getElementById('eventsJoined').textContent = registrations.length;
+
+                container.innerHTML = registrations.map(reg => {
+                    const event = reg.events;
+                    return `
+                        <div class="event-item">
+                            <div class="event-name">${escapeHtml(event.title)}</div>
+                            <div class="event-date">📅 ${new Date(event.event_date).toLocaleDateString()}</div>
+                            <div class="event-xp">+${event.xp_reward || 0} XP</div>
+                        </div>
+                    `;
+                }).join('');
+
+                console.log('✓ Registered events loaded:', registrations.length);
+
+            } catch (error) {
+                console.error('❌ Events loading error:', error);
+                container.innerHTML = `<div class="error">Error loading events: ${error.message}</div>`;
+            }
+        }
+
+        // ========== LOAD UPCOMING EVENTS ==========
+        async function loadUpcomingEvents() {
+            const supabase = window.getSupabase();
+            const container = document.getElementById('upcomingEventsContainer');
+
+            try {
+                const today = new Date().toISOString();
+
+                const { data: events, error } = await supabase
+                    .from('events')
+                    .select('id, title, event_date, xp_reward')
+                    .gt('event_date', today)
+                    .order('event_date', { ascending: true })
+                    .limit(5);
+
+                if (error) throw error;
+
+                if (!events || events.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🚀</div><p>No upcoming events scheduled yet.</p></div>';
+                    return;
+                }
+
+                container.innerHTML = events.map(event => `
+                    <div class="event-item">
+                        <div class="event-name">${escapeHtml(event.title)}</div>
+                        <div class="event-date">📅 ${new Date(event.event_date).toLocaleDateString()}</div>
+                        <div class="event-xp">+${event.xp_reward || 0} XP</div>
+                    </div>
+                `).join('');
+
+                console.log('✓ Upcoming events loaded:', events.length);
+
+            } catch (error) {
+                console.error('❌ Upcoming events error:', error);
+                container.innerHTML = `<div class="error">Error loading events: ${error.message}</div>`;
+            }
+        }
+
+        // ========== LOGOUT ==========
+        async function handleLogout() {
+            const supabase = window.getSupabase();
+            
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+
+                console.log('✓ Logged out successfully');
+                window.location.href = 'home.html';
+
+            } catch (error) {
+                console.error('❌ Logout error:', error);
+                alert('Error logging out: ' + error.message);
+            }
+        }
+
+        // ========== UTILITIES ==========
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showError(message) {
+            document.querySelector('.container').innerHTML = `<div class="error">${escapeHtml(message)}</div>`;
+        }
+    </script>
+</body>
+</html>

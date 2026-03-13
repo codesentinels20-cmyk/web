@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Member Login - Cyber Sentinels</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', 'JetBrains Mono', monospace;
+            background: #0a0e27;
+            color: #00ff41;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            background: rgba(10, 14, 39, 0.95);
+            border: 2px solid #00ff41;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            text-shadow: 0 0 10px #00ff41;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #1a1f3a;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 15px #00ff41;
+            border-color: #00ff41;
+        }
+
+        input::placeholder {
+            color: #00884c;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #00ff41;
+            color: #0a0e27;
+            border: none;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover:not(:disabled) {
+            box-shadow: 0 0 25px #00ff41;
+            transform: scale(1.02);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: center;
+            border: 1px solid;
+        }
+
+        .success {
+            background: rgba(0, 255, 65, 0.15);
+            color: #00ff41;
+            border-color: #00ff41;
+        }
+
+        .error {
+            background: rgba(255, 0, 100, 0.15);
+            color: #ff0064;
+            border-color: #ff0064;
+        }
+
+        .info {
+            background: rgba(0, 150, 255, 0.15);
+            color: #0096ff;
+            border-color: #0096ff;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        .back-link a {
+            color: #00ff41;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .back-link a:hover {
+            text-shadow: 0 0 10px #00ff41;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 11px;
+            color: #00884c;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '────';
+            margin: 0 8px;
+        }
+
+        .links-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            font-size: 11px;
+        }
+
+        .links-row a {
+            color: #00ff41;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .links-row a:hover {
+            text-shadow: 0 0 10px #00ff41;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+                max-width: 95%;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .links-row {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <div class="container">
+        <h1>> MEMBER_LOGIN</h1>
+
+        <form id="loginForm" onsubmit="handleMemberLogin(event)">
+            <!-- Email -->
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" placeholder="Enter your email" required>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" id="loginBtn">Login</button>
+        </form>
+
+        <div id="loginMessage"></div>
+
+        <div class="links-row">
+            <a href="register.html">🆕 New Member?</a>
+            <a href="home.html">← Back</a>
+        </div>
+
+        <div class="back-link">
+            <small style="color: #00884c;">Executive? <a href="auth.html">Admin Login</a></small>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="credentials.js"></script>
+    <script>
+        // ========== Matrix Rain Effect ==========
+        function initMatrixRain() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const fontSize = 16;
+            const columns = Math.floor(canvas.width / fontSize);
+            const drops = Array(columns).fill(0);
+
+            function drawMatrix() {
+                ctx.fillStyle = 'rgba(10, 14, 39, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#00ff41';
+                ctx.font = fontSize + 'px Courier New';
+                for (let i = 0; i < drops.length; i++) {
+                    const char = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+
+            setInterval(drawMatrix, 50);
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+
+        // ========== Initialize ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            initMatrixRain();
+            checkAuthStatus();
+        });
+
+        // ========== Check if already logged in ==========
+        async function checkAuthStatus() {
+            const supabase = window.getSupabase();
+            if (supabase) {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    window.location.href = 'member-dashboard.html';
+                }
+            }
+        }
+
+        // ========== Handle Member Login ==========
+        async function handleMemberLogin(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const messageDiv = document.getElementById('loginMessage');
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
+            messageDiv.innerHTML = '';
+
+            try {
+                const supabase = window.getSupabase();
+                if (!supabase) throw new Error('Supabase not initialized');
+
+                console.log(' [MEMBER LOGIN] Attempting login for:', email);
+
+                // Sign in
+                const { data: { user }, error: signInError } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+                if (signInError) {
+                    console.error('❌ SignIn error:', signInError);
+                    throw new Error(signInError.message || 'Login failed');
+                }
+
+                // Check if email is verified
+                if (!user.email_confirmed_at) {
+                    console.log('⚠️ Email not verified for:', email);
+                    messageDiv.innerHTML = `<div class="message info">
+                        ⚠️ Email Not Verified<br><br>
+                        Please verify your email before logging in.<br>
+                        Check your inbox for the verification link.<br>
+                        <small>Check spam folder as well.</small>
+                    </div>`;
+                    
+                    // Sign out immediately
+                    await supabase.auth.signOut();
+                    
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Login';
+                    return;
+                }
+
+                console.log('✓ Login successful for user:', user.id);
+
+                messageDiv.innerHTML = '<div class="message success">✅ Login successful! Redirecting...</div>';
+                setTimeout(() => {
+                    window.location.href = 'member-dashboard.html';
+                }, 1500);
+
+            } catch (error) {
+                console.error('❌ Login error:', error);
+                messageDiv.innerHTML = `<div class="message error">❌ ${error.message}</div>`;
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+            }
+        }
+    </script>
+</body>
+</html>

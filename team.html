@@ -26,7 +26,8 @@
             width: 100%;
             height: 100%;
             z-index: 1;
-            opacity: 0.2;
+            opacity: 0.5;
+            pointer-events: none;
         }
 
         nav {
@@ -447,7 +448,7 @@
                 <li><a href="team.html">TEAM</a></li>
                 <li><a href="dashboard.html" id="dashboardLink" style="display: none;">DASHBOARD</a></li>
                 <li><a href="resources.html">RESOURCES</a></li>
-                <li><a href="#">CONTACT</a></li>
+                <li><a href="home.html">CONTACT</a></li>
             </ul>
             <button class="executive-login" id="loginBtn">EXECUTIVE LOGIN</button>
             <button id="logoutBtn" style="display: none; background: #ff6600; margin-left: 15px;">LOGOUT</button>
@@ -469,7 +470,7 @@
         <a href="team.html">TEAM</a>
         <a href="dashboard.html" id="mobileDashboardLink" style="display: none;">DASHBOARD</a>
         <a href="resources.html">RESOURCES</a>
-        <a href="#">CONTACT</a>
+        <a href="home.html">CONTACT</a>
         <div class="mobile-buttons">
             <button class="executive-login" id="mobileLoginBtn">EXECUTIVE LOGIN</button>
             <button id="mobileLogoutBtn" style="display: none;">LOGOUT</button>
@@ -736,6 +737,11 @@
         class MatrixRain {
             constructor(canvasId) {
                 this.canvas = document.getElementById(canvasId);
+                if (!this.canvas) {
+                    console.warn('Matrix canvas not found');
+                    return;
+                }
+
                 this.ctx = this.canvas.getContext('2d');
                 this.canvas.width = window.innerWidth;
                 this.canvas.height = window.innerHeight;
@@ -755,10 +761,10 @@
             }
 
             animate() {
-                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-                this.ctx.fillStyle = '#00ff41';
+                this.ctx.fillStyle = 'rgba(0, 255, 65, 0.5)';
                 this.ctx.font = '15px JetBrains Mono, monospace';
 
                 for (let i = 0; i < this.columns; i++) {
@@ -874,6 +880,8 @@
             cursorOuter.style.opacity = '1';
             cursorInner.style.opacity = '1';
         });
+
+
     </script>
 </body>
 </html>

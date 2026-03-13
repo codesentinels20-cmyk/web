@@ -393,6 +393,83 @@
             background: #00cc33;
         }
 
+        /* ============================================
+           REGISTER BUTTON STYLES
+           ============================================ */
+        .event-register-btn,
+        .register-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #00ff41;
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .event-register-btn:hover:not(:disabled),
+        .register-btn:hover {
+            background: #00cc33;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .event-register-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .event-register-btn.registered {
+            background: #00ff41;
+            color: #0a0e27;
+        }
+
+        .event-register-btn.registered::after {
+            content: ' ✓';
+        }
+
+        .register-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .register-success {
+            background: rgba(0, 255, 65, 0.2);
+            color: #00ff41;
+            border: 1px solid #00ff41;
+        }
+
+        .register-error {
+            background: rgba(255, 65, 65, 0.2);
+            color: #ff4141;
+            border: 1px solid #ff4141;
+        }
+
+        .register-info {
+            background: rgba(0, 150, 255, 0.2);
+            color: #0096ff;
+            border: 1px solid #0096ff;
+        }
+
+        .xp-info {
+            font-size: 12px;
+            color: #00d9ff;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
         @media (max-width: 768px) {
             .events-grid {
                 grid-template-columns: 1fr;
@@ -521,12 +598,15 @@
                 photoHtml = `<img src="${event.photo_url}" style="width: 100%; border-radius: 4px; max-height: 250px; object-fit: cover; margin-bottom: 15px;">`;
             }
             
+            const xpInfo = event.xp_reward ? `<div class="xp-info">⚡ +${event.xp_reward} XP</div>` : '';
+            
             return `
                 <div class="event-card" onclick="openEventModal(${event.id})" style="cursor: pointer;">
                     ${photoHtml}
                     <div class="event-title">${escapeHtml(event.title)}</div>
                     <div class="event-date">${formatDate(event.event_date)}</div>
                     <div class="event-description">${escapeHtml(event.description)}</div>
+                    ${xpInfo}
                 </div>
             `;
         }
@@ -596,9 +676,9 @@
         }
         
         /**
-         * Open event modal with details
+         * Open event modal with details and register button
          */
-        function openEventModal(eventId) {
+        async function openEventModal(eventId) {
             const event = allEvents.find(e => e.id === eventId);
             if (!event) {
                 console.error('Event not found:', eventId);
@@ -618,7 +698,146 @@
                 photoImg.style.display = 'none';
             }
             
+            // Add register button
+            let registerHtml = '';
+            try {
+                const supabaseClient = window.supabaseInstance || window.getSupabase();
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                
+                if (user) {
+                    // Check if user is a member (has profiles entry with role='member')
+                    const { data: memberProfile } = await supabaseClient
+                        .from('profiles')
+                        .select('id, role')
+                        .eq('id', user.id)
+                        .single();
+                    
+                    if (memberProfile && memberProfile.role === 'member') {
+                        // Check if already registered
+                        const { data: existing } = await supabaseClient
+                            .from('member_event_registrations')
+                            .select('id')
+                            .eq('member_id', user.id)
+                            .eq('event_id', event.id)
+                            .single();
+                        
+                        if (existing) {
+                            registerHtml = `<button class="register-btn registered" disabled>✓ Already Registered</button>
+                                          <div class="xp-info">⚡ +${event.xp_reward || 0} XP (claimed)</div>`;
+                        } else {
+                            registerHtml = `<button class="register-btn" onclick="registerForEvent(${event.id})">Register For Event</button>
+                                          <div class="xp-info">⚡ +${event.xp_reward || 0} XP awaits</div>`;
+                        }
+                    } else {
+                        registerHtml = `<button class="register-btn" onclick="window.location.href='register.html'">Join as Member to Register</button>`;
+                    }
+                } else {
+                    registerHtml = `<button class="register-btn" onclick="window.location.href='login.html'">Login to Register</button>`;
+                }
+            } catch (err) {
+                console.error('Error checking auth:', err);
+                registerHtml = `<button class="register-btn" onclick="window.location.href='login.html'">Login to Register</button>`;
+            }
+            
+            let description = document.getElementById('modalEventDescription');
+            description.innerHTML = `${escapeHtml(event.description)}${registerHtml}`;
+            
             document.getElementById('eventModal').classList.add('open');
+        }
+        
+        /**
+         * Register member for event
+         */
+        async function registerForEvent(eventId) {
+            try {
+                console.log('📝 Registering for event:', eventId);
+                
+                const supabaseClient = window.supabaseInstance || window.getSupabase();
+                const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+                
+                if (userError || !user) {
+                    alert('Please login first');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                const event = allEvents.find(e => e.id === eventId);
+                let registerBtn = document.querySelector('.event-register-btn') || document.querySelector('.register-btn');
+                
+                if (registerBtn) {
+                    registerBtn.disabled = true;
+                    registerBtn.textContent = 'Registering...';
+                }
+                
+                // Insert into member_event_registrations
+                const { data: registration, error: regError } = await supabaseClient
+                    .from('member_event_registrations')
+                    .insert([{
+                        member_id: user.id,
+                        event_id: eventId,
+                        registered_at: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+                
+                if (regError) {
+                    if (regError.code === '23505') {
+                        // Duplicate key - already registered
+                        console.log('⚠️ Already registered for this event');
+                        if (registerBtn) {
+                            registerBtn.disabled = true;
+                            registerBtn.textContent = '✓ Already Registered';
+                            registerBtn.classList.add('registered');
+                        }
+                    } else {
+                        throw regError;
+                    }
+                    return;
+                }
+                
+                console.log('✓ Registration saved:', registration);
+                
+                // Add XP to member profile
+                const xpReward = event.xp_reward || 0;
+                const { data: profile, error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .select('xp')
+                    .eq('id', user.id)
+                    .single();
+                
+                if (!profileError && profile) {
+                    const newXp = (profile.xp || 0) + xpReward;
+                    const { error: updateError } = await supabaseClient
+                        .from('profiles')
+                        .update({ xp: newXp })
+                        .eq('id', user.id);
+                    
+                    if (!updateError) {
+                        console.log(`✓ Added ${xpReward} XP to member. New total: ${newXp}`);
+                    }
+                }
+                
+                // Update button
+                if (registerBtn) {
+                    registerBtn.textContent = '✓ Registered!';
+                    registerBtn.classList.add('registered');
+                    registerBtn.disabled = true;
+                }
+                
+                // Show success message
+                setTimeout(() => {
+                    alert(`✅ Successfully registered!\n\n+ ${xpReward} XP earned`);
+                }, 300);
+                
+            } catch (error) {
+                console.error('❌ Registration error:', error);
+                alert('Error registering: ' + error.message);
+                const registerBtn = document.querySelector('.register-btn');
+                if (registerBtn) {
+                    registerBtn.disabled = false;
+                    registerBtn.textContent = 'Register For Event';
+                }
+            }
         }
         
         /**

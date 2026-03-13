@@ -826,7 +826,7 @@
                 <button type="button" class="btn-join" id="joinBtn" onclick="window.location.href='register.html'">Join Club</button>
                 <button type="button" class="btn-logout" id="logoutBtn" style="display: none;" onclick="handleLogoutClick()">Log out</button>
             </div>
-            <button class="hamburger-menu" id="hamburgerBtn">
+            <button type="button" class="hamburger-menu" id="hamburgerBtn">
                 <span></span>
                 <span></span>
                 <span></span>
@@ -992,19 +992,21 @@
         const hamburgerBtn = document.getElementById('hamburgerBtn');
         const mobileMenu = document.getElementById('mobileMenu');
 
-        hamburgerBtn.addEventListener('click', () => {
-            hamburgerBtn.classList.toggle('active');
-            mobileMenu.classList.toggle('active');
-        });
+        if (hamburgerBtn && mobileMenu) {
+            hamburgerBtn.onclick = () => {
+                hamburgerBtn.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+            };
 
-        // Close menu when a link is clicked
-        const mobileLinks = mobileMenu.querySelectorAll('a');
-        mobileLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                hamburgerBtn.classList.remove('active');
-                mobileMenu.classList.remove('active');
+            // Close menu when a link is clicked
+            const mobileLinks = mobileMenu.querySelectorAll('a');
+            mobileLinks.forEach(link => {
+                link.onclick = () => {
+                    hamburgerBtn.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                };
             });
-        });
+        }
 
         // Get button elements at global scope
         const loginBtn = document.getElementById('loginBtn');
@@ -1099,17 +1101,8 @@
             }
         }
 
-        // Close mobile menu on link click
-        mobileMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                const hamburgerBtn = document.getElementById('hamburgerBtn');
-                hamburgerBtn.classList.remove('active');
-                mobileMenu.classList.remove('active');
-            });
-        });
-        
-        // Also check immediately in case page is already loaded
-        checkAuthStatus();
+        // Check auth status when page loads
+        window.addEventListener('load', checkAuthStatus);
 
         // Listen for auth changes
         const supabase = window.getSupabase();

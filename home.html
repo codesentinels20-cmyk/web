@@ -971,13 +971,12 @@
                     <ul>
                         <li><a href="auth.html" id="footerLogin">Log in</a></li>
                         <li><a href="auth.html">Register</a></li>
-                        <li><a href="#" id="footerDashboard" style="display: none;" onclick="handleDashboardClick(); return false;">Dashboard</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h3>Contact</h3>
                     <p style="color: #00d9ff; font-size: 14px; line-height: 1.8;">
-                        cybersentinels@kingsengg.edu.in<br>
+                        cybersentinel20@gmail.com<br>
                         Sriperumbudur, Chennai<br>
                         Tamil Nadu - 602117
                     </p>
@@ -1210,20 +1209,6 @@
         if (supabaseInstance) {
             const { data: { subscription } } = supabaseInstance.auth.onAuthStateChange((event, session) => {
                 checkAuthStatus();
-            });
-        }
-
-        const footerDashboard = document.getElementById('footerDashboard');
-        const footerLogin = document.getElementById('footerLogin');
-        const footerSupabase = window.getSupabase();
-        
-        if (footerSupabase && footerDashboard && footerLogin) {
-            footerSupabase.auth.getUser().then(({ data: { user } }) => {
-                if (user && user.email_confirmed_at && footerDashboard && footerLogin) {
-                    footerDashboard.style.display = 'block';
-                    footerLogin.textContent = 'Dashboard';
-                    footerLogin.href = 'dashboard.html';
-                }
             });
         }
 
